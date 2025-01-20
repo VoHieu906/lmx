@@ -1,1 +1,0 @@
-lmx tutorial sveltekit + pocketbase
