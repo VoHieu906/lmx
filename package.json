@@ -42,6 +42,7 @@
 	},
 	"dependencies": {
 		"@fontsource-variable/noto-sans": "^5.1.1",
+		"lucide-svelte": "^0.473.0",
 		"pocketbase": "^0.25.1"
 	}
 }
