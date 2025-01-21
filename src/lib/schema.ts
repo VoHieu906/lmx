@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { coerce, z } from 'zod';
 
 export const loginSchema = z.object({
 	email: z.string().email(),
@@ -16,3 +16,15 @@ export const registerSchema = z
 		message: 'Password do not match',
 		path: ['passwordConfirm']
 	});
+
+export const courseSchema = z.object({
+	title: z.string().min(10),
+	description: z.string(),
+	imgUrl: z.string().optional(),
+	price: z.number({ coerce: true }).optional(),
+	isPublish: z.boolean(),
+	category: z.string()
+});
+
+export const titleSchema = courseSchema.pick({ title: true });
+export type CourseSchema = z.infer<typeof courseSchema>;

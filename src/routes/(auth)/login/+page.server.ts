@@ -24,7 +24,7 @@ export const actions = {
 		} catch (e) {
 			console.log('🚀 ~ default: ~ e:', e);
 			const { status } = e as ClientResponseError;
-			return message(form, { status, message: 'an error occured' });
+			return message(form, { status, message: 'an error occurred' });
 		}
 		redirect(303, '/');
 	}
