@@ -8,11 +8,24 @@
 	import type { Infer } from 'sveltekit-superforms/adapters';
 	import * as Form from '$lib/components/ui/form';
 	import Input from './ui/input/input.svelte';
+	import { toast } from 'svelte-sonner';
 	type TitleSchema = typeof titleSchema;
 	export let data: SuperValidated<Infer<TitleSchema>>;
 
 	const form = superForm(data, {
-		validators: zodClient(titleSchema)
+		validators: zodClient(titleSchema),
+		resetForm: false,
+		onUpdated({ form }) {
+			if (form.message) {
+				if (!form.valid) {
+					toast.error(form.message);
+				}
+				if (form.valid) {
+					toast.success(form.message);
+					toggleEdit();
+				}
+			}
+		}
 	});
 
 	const { form: formData, enhance, delayed, submitting } = form;
@@ -36,7 +49,7 @@
 		</Button>
 	</div>
 	{#if !isEditing}
-		<p class="mt-2 text-sm">This is the title</p>
+		<p class="mt-2 text-sm">{data.data.title}</p>
 	{:else}
 		<form
 			action="/teacher/courses/{$page.params.courseId}/?/updateTitle"
@@ -52,13 +65,13 @@
 				<Form.FieldErrors />
 			</Form.Field>
 			<div class="flex items-center gap-x-2">
-				<Form.Button>
-					{#if $delayed}
-						<Loader2 class="size-6 animate-spin" />
+				<Form.Button disabled={$submitting}
+					>{#if $delayed}
+						<Loader2 class="size-6 animate-spin " />
 					{:else}
 						Save
-					{/if}
-				</Form.Button>
+					{/if}</Form.Button
+				>
 			</div>
 		</form>
 	{/if}
