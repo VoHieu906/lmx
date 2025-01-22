@@ -1,4 +1,5 @@
 <script lang="ts">
+	import DescriptionForm from '$lib/components/DescriptionForm.svelte';
 	import IconBadge from '$lib/components/IconBadge.svelte';
 	import TitleForm from '$lib/components/TitleForm.svelte';
 	import * as Alert from '$lib/components/ui/alert';
@@ -22,7 +23,8 @@
 	<Alert.Root class="rounded-none border border-yellow-300 bg-yellow-200/80">
 		<AlertTriangle class="size-4" />
 		<Alert.Title>Heads up!</Alert.Title>
-		<Alert.Description>This course is un-published.It will be visible to students</Alert.Description
+		<Alert.Description
+			>This course is un-published.It will be not visible to students</Alert.Description
 		>
 	</Alert.Root>
 {/if}
@@ -40,7 +42,7 @@
 				<h2 class="text-xl">Customize your course</h2>
 			</div>
 			<TitleForm data={data.titleForm} />
-			<!-- DescriptionForm -->
+			<DescriptionForm data={data.descriptionForm} />
 			<!-- ImageForm -->
 			<!-- CategoryForm -->
 		</div>

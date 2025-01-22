@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { cn } from '$lib/utils';
 	import type { Icon } from 'lucide-svelte';
-	import type { Component } from 'svelte';
+	import type { ComponentType } from 'svelte';
 	import { tv, type VariantProps } from 'tailwind-variants';
 	const iconVariants = tv({
 		base: 'rounded-full flex items-center justify-center',
@@ -23,7 +23,7 @@
 	});
 	type IconVariants = VariantProps<typeof iconVariants>;
 	type Props = IconVariants & {
-		icon: Component<Icon>;
+		icon: ComponentType<Icon>;
 	};
 	type $$Props = Props;
 	export let variant: $$Props['variant'] = 'default';
