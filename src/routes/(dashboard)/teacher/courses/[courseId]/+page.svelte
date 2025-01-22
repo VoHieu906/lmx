@@ -3,6 +3,7 @@
 	import DescriptionForm from '$lib/components/DescriptionForm.svelte';
 	import IconBadge from '$lib/components/IconBadge.svelte';
 	import ImageForm from '$lib/components/ImageForm.svelte';
+	import PriceForm from '$lib/components/PriceForm.svelte';
 	import TitleForm from '$lib/components/TitleForm.svelte';
 	import * as Alert from '$lib/components/ui/alert';
 	import { AlertTriangle, CircleDollarSign, File, LayoutDashboard, ListCheck } from 'lucide-svelte';
@@ -62,7 +63,7 @@
 					<IconBadge icon={CircleDollarSign} />
 					<h2 class="text-xl">Sell your course</h2>
 				</div>
-				<!-- PriceForm -->
+				<PriceForm data={data.priceForm} />
 			</div>
 			<div>
 				<div class="flex items-center gap-x-2">
