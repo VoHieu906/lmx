@@ -1,4 +1,5 @@
 <script lang="ts">
+	import CategoryForm from '$lib/components/CategoryForm.svelte';
 	import DescriptionForm from '$lib/components/DescriptionForm.svelte';
 	import IconBadge from '$lib/components/IconBadge.svelte';
 	import ImageForm from '$lib/components/ImageForm.svelte';
@@ -46,7 +47,7 @@
 			<TitleForm data={data.titleForm} />
 			<DescriptionForm data={data.descriptionForm} />
 			<ImageForm imageUrl={course.imageUrl} />
-			<!-- CategoryForm -->
+			<CategoryForm data={data.categoryForm} categories={data.categories} />
 		</div>
 		<div class="space-y-6">
 			<div>
