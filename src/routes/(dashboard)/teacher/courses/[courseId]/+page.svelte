@@ -1,5 +1,7 @@
 <script lang="ts">
+	import AttachmentForm from '$lib/components/AttachmentForm.svelte';
 	import CategoryForm from '$lib/components/CategoryForm.svelte';
+	import ChapterForm from '$lib/components/ChapterForm.svelte';
 	import DescriptionForm from '$lib/components/DescriptionForm.svelte';
 	import IconBadge from '$lib/components/IconBadge.svelte';
 	import ImageForm from '$lib/components/ImageForm.svelte';
@@ -56,7 +58,10 @@
 					<IconBadge icon={ListCheck} />
 					<h2 class="text-xl">Course chapters</h2>
 				</div>
-				<!-- ChapterForm -->
+				<ChapterForm
+					chapters={data.course.expand?.['chapters(course)'] ?? []}
+					data={data.chapterTitleForm}
+				/>
 			</div>
 			<div>
 				<div class="flex items-center gap-x-2">
@@ -70,7 +75,7 @@
 					<IconBadge icon={File} />
 					<h2 class="text-xl">Resources and Attachments</h2>
 				</div>
-				<!-- AttachmentForm -->
+				<AttachmentForm attachments={data.course.expand?.['attachments(course)'] ?? []} />
 			</div>
 		</div>
 	</div>

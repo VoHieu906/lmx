@@ -1,6 +1,12 @@
-import { categorySchema, descriptionSchema, priceSchema, titleSchema } from '$lib/schema.js';
-import { type Category, type Course } from '$lib/type.js';
-import { error, redirect } from '@sveltejs/kit';
+import {
+	categorySchema,
+	descriptionSchema,
+	priceSchema,
+	titleSchema,
+	chapterTitleSchema
+} from '$lib/schema.js';
+import { type Category, type Chapter, type Course } from '$lib/type.js';
+import { redirect } from '@sveltejs/kit';
 import type { ClientResponseError } from 'pocketbase';
 import { fail, message, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
@@ -22,8 +28,6 @@ export const load = async ({ params, locals: { user, pb } }) => {
 			}
 			return course;
 		} catch (e) {
-			// const { status } = e as ClientResponseError;
-			// if (status === 404) error(400, 'course does not exist');
 			redirect(303, '/');
 		}
 	}
@@ -44,13 +48,15 @@ export const load = async ({ params, locals: { user, pb } }) => {
 	const descriptionForm = await superValidate(course, zod(descriptionSchema));
 	const categoryForm = await superValidate(course, zod(categorySchema));
 	const priceForm = await superValidate(course, zod(priceSchema));
+	const chapterTitleForm = await superValidate(zod(chapterTitleSchema), { id: 'chapterTitleForm' });
 	return {
 		course,
 		categories,
 		titleForm,
 		descriptionForm,
 		categoryForm,
-		priceForm
+		priceForm,
+		chapterTitleForm
 	};
 };
 
@@ -161,6 +167,87 @@ export const actions = {
 		try {
 			await pb.collection('courses').update(courseId, form.data);
 			return message(form, 'successfully updated course price');
+		} catch (e) {
+			const { message: errorMessage } = e as ClientResponseError;
+
+			return message(form, errorMessage, {
+				status: 400
+			});
+		}
+	},
+	createAttachment: async (event) => {
+		const {
+			locals: { pb },
+			params,
+			request
+		} = event;
+		const { courseId } = params;
+		const formData = await request.formData();
+		const file = formData.get('file');
+		try {
+			if (file) {
+				await pb.collection('attachments').create({
+					name: file.name,
+					course: courseId,
+					url: file
+				});
+				return { message: 'successfully added your course attachment' };
+			}
+		} catch (e) {
+			const { message: errorMessage } = e as ClientResponseError;
+			return fail(400, {
+				message: errorMessage
+			});
+		}
+	},
+	deleteAttachment: async (event) => {
+		const {
+			locals: { pb },
+			request
+		} = event;
+
+		const formData = await request.formData();
+		const id = formData.get('id') as string;
+		try {
+			await pb.collection('attachments').delete(id);
+		} catch (e) {
+			const { message: errorMessage } = e as ClientResponseError;
+			return fail(400, {
+				message: errorMessage
+			});
+		}
+	},
+	createChapter: async (event) => {
+		const {
+			locals: { pb },
+			params
+		} = event;
+		const { courseId } = params;
+		const form = await superValidate(event, zod(chapterTitleSchema));
+		if (!form.valid) {
+			return fail(400, { form });
+		}
+
+		let lastChapter: Chapter | null = null;
+		try {
+			lastChapter = await pb
+				.collection('chapters')
+				.getFirstListItem<Chapter>(`course="${courseId}"`, {
+					sort: '-position'
+				});
+		} catch {
+			lastChapter = null;
+		}
+
+		try {
+			const newPosition = lastChapter ? lastChapter.position + 1 : 1;
+
+			await pb.collection('chapters').create({
+				title: form.data.title,
+				course: courseId,
+				position: newPosition
+			});
+			return message(form, 'successfully added course chapter');
 		} catch (e) {
 			const { message: errorMessage } = e as ClientResponseError;
 

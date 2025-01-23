@@ -38,7 +38,7 @@ export type Chapter = RecordModel & {
 export type MuxData = RecordModel & {
 	assetId: string;
 	playbackId: string;
-	chapter: boolean;
+	chapterId: string;
 };
 export type Purchase = RecordModel & {
 	user: string;
