@@ -1,4 +1,4 @@
-import { chapterTitleSchema } from '$lib/schema.js';
+import { chapterAccessSchema, chapterTitleSchema } from '$lib/schema.js';
 import type { Chapter } from '$lib/type.js';
 import { error, redirect } from '@sveltejs/kit';
 import type { ClientResponseError } from 'pocketbase';
@@ -20,17 +20,17 @@ export const load = async ({ params, locals: { pb } }) => {
 		} catch (e) {
 			const { status } = e as ClientResponseError;
 
-			if (status === 404) error(404, 'course does not exist');
+			if (status === 404) error(404, 'chapter does not exist');
 			redirect(308, '/');
 		}
 	}
 	const chapter = await getChapter();
 	const chapterTitleForm = await superValidate(chapter, zod(chapterTitleSchema));
-	return { chapter, chapterTitleForm };
+	const chapterAccessForm = await superValidate(chapter, zod(chapterAccessSchema));
+	return { chapter, chapterTitleForm, chapterAccessForm };
 };
 export const actions = {
 	updateTitle: async (event) => {
-		console.log(event);
 		const {
 			locals: { pb },
 			params
@@ -48,6 +48,32 @@ export const actions = {
 		try {
 			await pb.collection('chapters').update(chapterId, form.data);
 			return message(form, 'successfully updated chapter title');
+		} catch (e) {
+			const { message: errorMessage } = e as ClientResponseError;
+
+			return message(form, errorMessage, {
+				status: 400
+			});
+		}
+	},
+	updateAccess: async (event) => {
+		const {
+			locals: { pb },
+			params
+		} = event;
+		const { chapterId } = params;
+
+		const form = await superValidate(event, zod(chapterAccessSchema));
+
+		if (!form.valid) {
+			return fail(400, {
+				form
+			});
+		}
+
+		try {
+			await pb.collection('chapters').update(chapterId, form.data);
+			return message(form, 'successfully updated chapter access settings');
 		} catch (e) {
 			const { message: errorMessage } = e as ClientResponseError;
 

@@ -1,10 +1,11 @@
 <script lang="ts">
 	import * as Alert from '$lib/components/ui/alert';
-	import { AlertTriangle, ArrowLeft, LayoutDashboard } from 'lucide-svelte';
+	import { AlertTriangle, ArrowLeft, Eye, LayoutDashboard } from 'lucide-svelte';
 	import { page } from '$app/stores';
 	import IconBadge from '$lib/components/IconBadge.svelte';
 	import ChapterTitleForm from '$lib/components/ChapterTitleForm.svelte';
 	import ChapterActions from '$lib/components/ChapterActions.svelte';
+	import ChapterAccessForm from '$lib/components/ChapterAccessForm.svelte';
 	export let data;
 
 	$: chapter = data.chapter;
@@ -52,7 +53,13 @@
 				</div>
 				<ChapterTitleForm data={data.chapterTitleForm} />
 			</div>
-			<div></div>
+			<div>
+				<div class="flex items-center gap-x-2">
+					<IconBadge icon={Eye} />
+					<h2 class="text-xl">Access Settings</h2>
+				</div>
+				<ChapterAccessForm data={data.chapterAccessForm} />
+			</div>
 		</div>
 	</div>
 </div>

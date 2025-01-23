@@ -33,4 +33,7 @@ export const priceSchema = courseSchema.pick({ price: true });
 export const chapterTitleSchema = z.object({
 	title: z.string().min(1)
 });
+export const chapterAccessSchema = z.object({
+	isFree: z.boolean()
+});
 export type CourseSchema = z.infer<typeof courseSchema>;
