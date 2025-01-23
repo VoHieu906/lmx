@@ -44,6 +44,7 @@
 	},
 	"dependencies": {
 		"@fontsource-variable/noto-sans": "^5.1.1",
+		"@mux/mux-player": "^3.2.4",
 		"lucide-svelte": "^0.473.0",
 		"pocketbase": "^0.25.1",
 		"svelte-dnd-action": "^0.9.55",

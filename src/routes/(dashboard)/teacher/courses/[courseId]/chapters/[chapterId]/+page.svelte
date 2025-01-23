@@ -1,11 +1,12 @@
 <script lang="ts">
 	import * as Alert from '$lib/components/ui/alert';
-	import { AlertTriangle, ArrowLeft, Eye, LayoutDashboard } from 'lucide-svelte';
+	import { AlertTriangle, ArrowLeft, Eye, LayoutDashboard, Video } from 'lucide-svelte';
 	import { page } from '$app/stores';
 	import IconBadge from '$lib/components/IconBadge.svelte';
 	import ChapterTitleForm from '$lib/components/ChapterTitleForm.svelte';
 	import ChapterActions from '$lib/components/ChapterActions.svelte';
 	import ChapterAccessForm from '$lib/components/ChapterAccessForm.svelte';
+	import ChapterVideoForm from '$lib/components/ChapterVideoForm.svelte';
 	export let data;
 
 	$: chapter = data.chapter;
@@ -60,6 +61,13 @@
 				</div>
 				<ChapterAccessForm data={data.chapterAccessForm} />
 			</div>
+		</div>
+		<div>
+			<div class="flex items-center gap-x-2">
+				<IconBadge icon={Video} />
+				<h2 class="text-xl">Add a video</h2>
+			</div>
+			<ChapterVideoForm initialData={data.chapter} />
 		</div>
 	</div>
 </div>
