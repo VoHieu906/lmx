@@ -31,15 +31,8 @@ export type Chapter = RecordModel & {
 	isPublished: boolean;
 	isFree: boolean;
 	course: string;
-	expand: {
-		'muxData(chapterId)'?: MuxData[];
-	};
 };
-export type MuxData = RecordModel & {
-	assetId: string;
-	playbackId: string;
-	chapterId: string;
-};
+
 export type Purchase = RecordModel & {
 	user: string;
 	course: string;

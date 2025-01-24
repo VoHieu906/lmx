@@ -7,6 +7,7 @@
 	import ChapterActions from '$lib/components/ChapterActions.svelte';
 	import ChapterAccessForm from '$lib/components/ChapterAccessForm.svelte';
 	import ChapterVideoForm from '$lib/components/ChapterVideoForm.svelte';
+	import ChapterDescriptionForm from '$lib/components/ChapterDescriptionForm.svelte';
 	export let data;
 
 	$: chapter = data.chapter;
@@ -53,6 +54,7 @@
 					<h2 class="text-xl">Customize your chapter</h2>
 				</div>
 				<ChapterTitleForm data={data.chapterTitleForm} />
+				<ChapterDescriptionForm data={data.chapterDescriptionForm} />
 			</div>
 			<div>
 				<div class="flex items-center gap-x-2">

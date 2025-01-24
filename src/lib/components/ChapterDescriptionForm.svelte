@@ -1,21 +1,20 @@
 <script lang="ts">
 	import * as Form from '$lib/components/ui/form';
-	import { page } from '$app/stores';
 	import { Loader2, Pencil } from 'lucide-svelte';
 	import Button from './ui/button/button.svelte';
 	import { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms';
-	import { descriptionSchema } from '$lib/schema';
+	import { chapterDescriptionSchema } from '$lib/schema';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import { toast } from 'svelte-sonner';
 	import Textarea from './ui/textarea/textarea.svelte';
 	import { cn } from '$lib/utils';
-	export let data: SuperValidated<Infer<typeof descriptionSchema>>;
+	export let data: SuperValidated<Infer<typeof chapterDescriptionSchema>>;
 	let isEditing = false;
 	function toggleEdit() {
 		isEditing = !isEditing;
 	}
 	const form = superForm(data, {
-		validators: zodClient(descriptionSchema),
+		validators: zodClient(chapterDescriptionSchema),
 		onUpdated({ form }) {
 			if (form.message) {
 				if (!form.valid) {
@@ -33,7 +32,7 @@
 
 <div class="mt-6 rounded-md border bg-muted p-4">
 	<div class="flex items-center justify-between font-medium">
-		Course description
+		Chapter description
 		<Button on:click={toggleEdit} variant="ghost">
 			{#if isEditing}
 				Cancel
@@ -48,15 +47,9 @@
 			{data.data.description || ' No description'}
 		</p>
 	{:else}
-		<form
-			method="POST"
-			use:enhance
-			class="mt-4 space-y-4"
-			action="/teacher/courses/{$page.params.courseId}/?/updateDescription"
-		>
+		<form method="POST" use:enhance class="mt-4 space-y-4" action="?/updateDescription">
 			<Form.Field {form} name="description">
 				<Form.Control let:attrs>
-					<Form.Label>Description</Form.Label>
 					<Textarea
 						{...attrs}
 						placeholder="This course is about..."

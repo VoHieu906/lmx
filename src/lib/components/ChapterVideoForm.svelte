@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { Chapter } from '$lib/type';
-	import { onMount } from 'svelte';
 	import Button from './ui/button/button.svelte';
 	import { Loader2, Pencil, PlusCircle, UploadCloud, VideoIcon } from 'lucide-svelte';
 	import { invalidateAll } from '$app/navigation';
@@ -14,9 +13,6 @@
 	function toggleEdit() {
 		isEditing = !isEditing;
 	}
-	onMount(async () => {
-		await import('@mux/mux-player');
-	});
 </script>
 
 <div class="mt-6 rounded-md border bg-muted p-4">
@@ -79,7 +75,7 @@
 						<p class="text-sm font-semibold capitalize text-blue-600">
 							choose file or drag and drop
 						</p>
-						<p class="text-sm">image (4mb)</p>
+						<p class="text-sm">Video</p>
 					</div>
 					{#if fileInput?.length === 1}
 						<button
@@ -98,13 +94,11 @@
 			<p class="mt-4 text-xs text-muted-foreground">upload this chapter's video</p>
 		</form>
 	{:else if initialData.videoUrl}
-		<mux-player
-			playback-id={initialData.expand?.['muxData(chapterId)']?.[0]?.playbackId || ''}
-			metadata-video-id="video-id-54321"
-			metadata-video-title="Svelte Kit: Episode 2"
-			metadata-viewer-user-id="user-id-sveltekit007"
-			stream-type="on-demand"
-		></mux-player>
+		<div class="mt-4">
+			<video src={initialData.videoUrl} controls class="w-full rounded-md">
+				<track kind="captions" />
+			</video>
+		</div>
 		<div class="mt-2 text-xs text-muted-foreground">
 			Videos can take a few minutes to process, refresh the page if video does not appear
 		</div>

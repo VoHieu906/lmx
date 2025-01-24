@@ -33,6 +33,9 @@ export const priceSchema = courseSchema.pick({ price: true });
 export const chapterTitleSchema = z.object({
 	title: z.string().min(1)
 });
+export const chapterDescriptionSchema = z.object({
+	description: z.string()
+});
 export const chapterAccessSchema = z.object({
 	isFree: z.boolean()
 });

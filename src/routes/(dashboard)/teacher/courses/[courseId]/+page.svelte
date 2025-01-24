@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Actions from '$lib/components/Actions.svelte';
 	import AttachmentForm from '$lib/components/AttachmentForm.svelte';
 	import CategoryForm from '$lib/components/CategoryForm.svelte';
 	import ChapterForm from '$lib/components/ChapterForm.svelte';
@@ -23,6 +24,7 @@
 	$: completedFields = requiredFields.filter(Boolean).length;
 	$: completedText = `(${completedFields}/${totalFields})`;
 	$: isComplete = requiredFields.every(Boolean);
+	console.log(data.descriptionForm);
 </script>
 
 {#if !course.isPublished}
@@ -40,6 +42,7 @@
 			<h1 class="text-2xl font-medium">Course setup</h1>
 			<span class="text-sm text-muted-foreground"> Complete all field {completedText}</span>
 		</div>
+		<Actions disabled={!isComplete} isPublished={course.isPublished} />
 	</div>
 	<div class="mt-16 grid grid-cols-1 gap-6 md:grid-cols-2">
 		<div>

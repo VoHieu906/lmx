@@ -18,6 +18,7 @@
 		"@sveltejs/adapter-auto": "^4.0.0",
 		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^4.0.0",
+		"@types/quill": "^2.0.14",
 		"autoprefixer": "^10.4.20",
 		"bits-ui": "^0.22.0",
 		"clsx": "^2.1.1",
@@ -44,10 +45,15 @@
 	},
 	"dependencies": {
 		"@fontsource-variable/noto-sans": "^5.1.1",
+		"@mux/mux-node": "^9.0.1",
 		"@mux/mux-player": "^3.2.4",
+		"@neoconfetti/svelte": "^2.2.1",
+		"canvas-confetti": "^1.9.3",
 		"lucide-svelte": "^0.473.0",
 		"pocketbase": "^0.25.1",
+		"quill": "^2.0.3",
 		"svelte-dnd-action": "^0.9.55",
-		"svelte-radix": "^2.0.1"
+		"svelte-radix": "^2.0.1",
+		"svelte-table": "^0.6.3"
 	}
 }
