@@ -1,8 +1,21 @@
 <script lang="ts">
-	import { ChartNoAxesColumnIncreasing, List } from 'lucide-svelte';
+	import { ChartNoAxesColumnIncreasing, Compass, Layout, List, Route } from 'lucide-svelte';
 	import SidebarItem from './SidebarItem.svelte';
+	import { page } from '$app/stores';
 
-	const routes = [
+	const guestRoutes = [
+		{
+			icon: Layout,
+			label: 'Course',
+			href: '/'
+		},
+		{
+			icon: Compass,
+			label: 'Analytics',
+			href: '/search'
+		}
+	];
+	const teacherRoutes = [
 		{
 			icon: List,
 			label: 'Course',
@@ -14,6 +27,9 @@
 			href: '/teacher/analytics'
 		}
 	];
+	$: pathname = $page.url.pathname;
+	$: isTeacherPage = pathname?.startsWith('/teacher');
+	$: routes = isTeacherPage ? teacherRoutes : guestRoutes;
 </script>
 
 <div class="flex w-full flex-col">

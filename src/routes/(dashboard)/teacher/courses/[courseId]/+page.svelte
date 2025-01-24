@@ -9,7 +9,14 @@
 	import PriceForm from '$lib/components/PriceForm.svelte';
 	import TitleForm from '$lib/components/TitleForm.svelte';
 	import * as Alert from '$lib/components/ui/alert';
-	import { AlertTriangle, CircleDollarSign, File, LayoutDashboard, ListCheck } from 'lucide-svelte';
+	import {
+		AlertTriangle,
+		ArrowLeft,
+		CircleDollarSign,
+		File,
+		LayoutDashboard,
+		ListCheck
+	} from 'lucide-svelte';
 	export let data;
 	$: course = data.course;
 	$: requiredFields = [
@@ -39,7 +46,16 @@
 <div class="p-6">
 	<div class="flex items-center justify-between">
 		<div class="flex flex-col gap-y-2">
-			<h1 class="text-2xl font-medium">Course setup</h1>
+			<h1 class="text-2xl font-medium">
+				<a
+					href="/teacher/courses"
+					class="mb-6 flex items-center text-sm transition hover:opacity-75"
+				>
+					<ArrowLeft class="mr-2 size-4" />
+					Back to dashboard</a
+				>
+				Course setup
+			</h1>
 			<span class="text-sm text-muted-foreground"> Complete all field {completedText}</span>
 		</div>
 		<Actions disabled={!isComplete} isPublished={course.isPublished} />

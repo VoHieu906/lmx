@@ -39,4 +39,5 @@ export const chapterDescriptionSchema = z.object({
 export const chapterAccessSchema = z.object({
 	isFree: z.boolean()
 });
+export type LoginSchema = z.infer<typeof loginSchema>;
 export type CourseSchema = z.infer<typeof courseSchema>;

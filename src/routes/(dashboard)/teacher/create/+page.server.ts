@@ -27,6 +27,6 @@ export const actions = {
 			const { message: errorMessage } = e as ClientResponseError;
 			return message(form, errorMessage, { status: 400 });
 		}
-		redirect(303, `/teacher/course/${courseRecord.id}`);
+		redirect(303, `/teacher/courses/${courseRecord.id}`);
 	}
 };

@@ -138,7 +138,38 @@ export const actions = {
 			});
 		}
 	},
-	deleteChapter: async (event) => {},
+	deleteChapter: async (event) => {
+		const {
+			locals: { pb },
+			params
+		} = event;
+		const { chapterId, courseId } = params;
+
+		try {
+			// Delete the chapter from the 'chapters' collection
+			await pb.collection('chapters').delete(chapterId);
+
+			// Check if there are any published chapters in the course
+			const isPublishedChapterInCourse = await pb.collection('chapters').getFullList({
+				filter: `course = "${courseId}" && isPublished = "${true}" `
+			});
+
+			// If no published chapters remain in the course, unpublish the course
+			if (!isPublishedChapterInCourse.length) {
+				await pb.collection('courses').update<Course>(courseId, {
+					isPublished: false
+				});
+			}
+
+			return { message: 'Successfully deleted chapter' };
+		} catch (e) {
+			const { message: errorMessage } = e as ClientResponseError;
+
+			return fail(400, {
+				message: errorMessage
+			});
+		}
+	},
 	updatePublish: async (event) => {
 		const {
 			locals: { pb },

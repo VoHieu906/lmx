@@ -2,7 +2,8 @@
 	import { enhance } from '$app/forms';
 	import { toast } from 'svelte-sonner';
 	import Button from './ui/button/button.svelte';
-	import { Loader2 } from 'lucide-svelte';
+	import { Loader2, Trash } from 'lucide-svelte';
+	import ConfirmModal from './modals/ConfirmModal.svelte';
 
 	export let disabled: boolean;
 	export let isPublished: boolean;
@@ -42,4 +43,9 @@
 			{/if}
 		</Button>
 	</form>
+	<ConfirmModal action="?/deleteChapter">
+		<Button size="icon">
+			<Trash class="size-4" />
+		</Button>
+	</ConfirmModal>
 </div>
