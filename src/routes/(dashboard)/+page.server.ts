@@ -1,3 +1,5 @@
+export const load = async ({ locals: { pb } }) => {};
+
 export const actions = {
 	logout: async (event) => {
 		const {

@@ -1,28 +1,44 @@
-import { getCourses } from '$lib/actions/getCourses';
-import type { Category } from '$lib/type';
+import type { Category, Course } from '$lib/type';
+import { fail } from '@sveltejs/kit';
+import type { ClientResponseError } from 'pocketbase';
 
 export const load = async ({ locals: { pb, user }, url }) => {
-	const categoryId = url.searchParams.get('categoryId') || '';
-	const userId = user?.id;
-	const title = url.searchParams.get('title') || '';
-	console.log(url.searchParams.get('categoryId'));
-	function getCategories() {
-		const categories = pb.collection('categories').getFullList<Category>({
-			sort: '-created'
-		});
-		return categories;
-	}
-	const [categories, courses] = await Promise.all([
-		getCategories(),
-		getCourses({ categoryId, pb, title, userId })
-	]);
-	console.log('🚀 ~ load ~ courses:', courses);
+	async function getCategories() {
+		try {
+			const categories = pb.collection('categories').getFullList<Category>({
+				sort: '-created'
+			});
+			return categories;
+		} catch (e) {
+			const { message: errorMessage } = e as ClientResponseError;
 
+			return fail(400, {
+				message: errorMessage
+			});
+		}
+	}
+	async function getAllCourses() {
+		try {
+			const allCourses = await pb.collection('courses').getFullList<Course>({
+				filter: `isPublished = true`,
+				expand: 'category,chapters(course)',
+				sort: '-created'
+			});
+
+			const plainCourses = allCourses.map((course) => ({
+				...course,
+				imageUrl: course.imageUrl ? pb.files.getURL(course, course.imageUrl) : null
+			}));
+
+			return plainCourses;
+		} catch (e) {
+			const { message: errorMessage } = e as ClientResponseError;
+			return fail(400, { message: errorMessage });
+		}
+	}
+	const [categories, allCourses] = await Promise.all([getCategories(), getAllCourses()]);
 	return {
 		categories,
-		courses
+		allCourses
 	};
-};
-export const actions = {
-	getAllCourses: async () => {}
 };

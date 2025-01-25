@@ -3,19 +3,20 @@
 	import { page } from '$app/stores';
 	import Button from './ui/button/button.svelte';
 	import * as Avatar from '$lib/components/ui/avatar';
-	import SearchInput from './SearchInput.svelte';
 	import { enhance } from '$app/forms';
+	import Search from './Search.svelte';
+
 	$: pathname = $page.url.pathname;
 	$: isTeacherPage = pathname?.startsWith('/teacher');
 	$: isPlayerPage = pathname?.includes('chapter');
 	$: isSearchPage = pathname === '/search';
 </script>
 
-{#if isSearchPage}
+<!-- {#if isSearchPage}
 	<div class="hidden md:block">
-		<SearchInput />
+		<Search />
 	</div>
-{/if}
+{/if} -->
 <div class="ml-auto flex gap-x-2">
 	{#if isTeacherPage || isPlayerPage}
 		<Button href="/" size="sm" variant="ghost">

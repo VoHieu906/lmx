@@ -31,7 +31,6 @@
 	$: completedFields = requiredFields.filter(Boolean).length;
 	$: completedText = `(${completedFields}/${totalFields})`;
 	$: isComplete = requiredFields.every(Boolean);
-	console.log(data.descriptionForm);
 </script>
 
 {#if !course.isPublished}

@@ -2,15 +2,15 @@
 	import { BookOpen } from 'lucide-svelte';
 	import IconBadge from './IconBadge.svelte';
 	import { formatCurrency } from '$lib/utils';
+	import Button from './ui/button/button.svelte';
 
 	export let id: string;
 	export let title: string;
 	export let imageUrl: string | undefined;
 	export let price: number | undefined;
-	export let progress: number | null;
+	export let progress: number | null | undefined;
 	export let category: string | undefined;
 	export let chapterLength: number | undefined;
-	console.log('🚀 ~ progress:', progress);
 </script>
 
 <a href="/courses/{id}" class="">
@@ -28,23 +28,31 @@
 			<div class="my-3 flex items-center gap-x-2 text-sm md:text-xs">
 				<div class="flex items-center gap-x-1 text-slate-500">
 					<IconBadge size="sm" icon={BookOpen} />
-					<span
-						>{chapterLength}
-						{#if chapterLength === 1}
-							chapter
-						{:else}
-							chapters
-						{/if}
+					<span>
+						{chapterLength}
 					</span>
 				</div>
 			</div>
-			{#if progress !== null}
-				<div>TODO: Progress component</div>
+			{#if progress !== null && progress !== undefined}
+				<div class="mt-2 h-2.5 w-full rounded-full bg-gray-200">
+					<div class="h-2.5 rounded-full bg-blue-500" style="width: {progress}%"></div>
+				</div>
 			{:else}
+				<div class="mt-2 h-2.5 w-full rounded-full bg-gray-200">
+					<div class="h-2.5 rounded-full bg-blue-500" style="width: 0%"></div>
+				</div>
 				<p>
 					{formatCurrency(price || 0)}
 				</p>
 			{/if}
+
+			<Button variant="secondary" class="hover:text-blue-500">
+				{#if price === 0}
+					Subscribe
+				{:else}
+					Purchase
+				{/if}
+			</Button>
 		</div>
 	</div>
 </a>

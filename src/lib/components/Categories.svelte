@@ -24,9 +24,20 @@
 
 		goto(`?${searchParams.toString()}`);
 	}
+	function showAll() {
+		const searchParams = new URLSearchParams(get(page).url.searchParams);
+		searchParams.delete('categoryId');
+		goto(`?${searchParams.toString()}`);
+	}
 </script>
 
 <div class="flex items-center gap-x-2 overflow-x-auto pb-2">
+	<button
+		on:click={showAll}
+		class="flex items-center gap-x-1 rounded-full border border-slate-200 px-3 py-2 text-sm transition hover:border-sky-700"
+	>
+		<div class="truncate">Show All</div>
+	</button>
 	{#each items as { id, name }}
 		<button
 			on:click={() => updateCategory(id)}
