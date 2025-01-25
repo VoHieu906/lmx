@@ -49,10 +49,12 @@
 		"@mux/mux-node": "^9.0.1",
 		"@mux/mux-player": "^3.2.4",
 		"@neoconfetti/svelte": "^2.2.1",
+		"apexcharts": "^4.4.0",
 		"canvas-confetti": "^1.9.3",
 		"lucide-svelte": "^0.473.0",
 		"pocketbase": "^0.25.1",
 		"quill": "^2.0.3",
+		"svelte-apexcharts": "^1.0.2",
 		"svelte-dnd-action": "^0.9.55",
 		"svelte-radix": "^2.0.1",
 		"svelte-table": "^0.6.3"
