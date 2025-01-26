@@ -10,15 +10,37 @@
 	let isEditing = false;
 	let fileInput: FileList | null;
 	let upLoading = false;
+	let videoDuration: number | null = null;
+
 	function toggleEdit() {
 		isEditing = !isEditing;
+	}
+
+	// Function to calculate video duration
+	async function calculateDuration(file: File): Promise<number> {
+		return new Promise((resolve) => {
+			const video = document.createElement('video');
+			video.preload = 'metadata';
+			video.onloadedmetadata = () => {
+				resolve(video.duration);
+			};
+			video.src = URL.createObjectURL(file);
+		});
+	}
+
+	// Handle file input change
+	async function handleFileChange(event: Event) {
+		const files = (event.target as HTMLInputElement).files;
+		if (files && files.length > 0) {
+			fileInput = files;
+			videoDuration = await calculateDuration(files[0]);
+		}
 	}
 </script>
 
 <div class="mt-6 rounded-md border bg-muted p-4">
 	<div class="flex items-center justify-between font-medium">
 		Chapter Video
-
 		<Button on:click={toggleEdit} variant="ghost">
 			{#if isEditing}
 				cancel
@@ -57,7 +79,7 @@
 					invalidateAll();
 				};
 			}}
-			class=" mt-4"
+			class="mt-4"
 		>
 			<div class="relative">
 				<input
@@ -65,12 +87,13 @@
 					name="video"
 					accept="video/*"
 					bind:files={fileInput}
-					class=" h-60 w-full rounded-md border border-slate-300 bg-transparent text-transparent file:hidden"
+					on:change={handleFileChange}
+					class="h-60 w-full rounded-md border border-slate-300 bg-transparent text-transparent file:hidden"
 				/>
 				<div
 					class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 space-y-2 text-center"
 				>
-					<UploadCloud class="mx-auto h-10 w-10 " />
+					<UploadCloud class="mx-auto h-10 w-10" />
 					<div>
 						<p class="text-sm font-semibold capitalize text-blue-600">
 							choose file or drag and drop
@@ -83,7 +106,7 @@
 							type="submit"
 						>
 							{#if upLoading}
-								<Loader2 class="size-6 animate-spin " />
+								<Loader2 class="size-6 animate-spin" />
 							{:else}
 								upload {fileInput?.length} file
 							{/if}
@@ -91,6 +114,7 @@
 					{/if}
 				</div>
 			</div>
+			<input type="hidden" name="duration" value={videoDuration} />
 			<p class="mt-4 text-xs text-muted-foreground">upload this chapter's video</p>
 		</form>
 	{:else if initialData.videoUrl}
@@ -107,7 +131,4 @@
 			<VideoIcon class="h-10 w-10 text-muted-foreground" />
 		</div>
 	{/if}
-	<!-- {#if initialData.videoUrl && !isEditing}
-		
-	{/if} -->
 </div>

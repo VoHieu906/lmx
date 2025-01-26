@@ -85,7 +85,7 @@
 									<img
 										src={item.thumbnailUrl}
 										alt={item.title}
-										class="h-[101px] w-[180px] rounded-md object-cover transition-all duration-300 group-hover:scale-105"
+										class="h-[101px] w-[180px] rounded-md object-cover transition-all duration-300"
 									/>
 								{:else}
 									<div class="h-[101px] w-[180px] animate-pulse rounded-md bg-gray-200"></div>

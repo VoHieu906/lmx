@@ -31,9 +31,15 @@
 		slug: 'advanced-sveltekit-development'
 	};
 	import { page } from '$app/stores';
+	import { formatDurationWithUnits } from '$lib/utils.js';
 	export let data;
 	let { course } = data;
-	console.log(course);
+	let chapters = course.expand?.['chapters(course)'];
+
+	let totalDuration = chapters?.reduce((acc, ch) => {
+		let chdu = parseFloat(ch.duration);
+		return acc + chdu;
+	}, 0);
 </script>
 
 <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -113,7 +119,7 @@
 		<!-- Right Column -->
 		<div class="lg:w-1/3">
 			<div class="mb-6 grid grid-cols-2 gap-4">
-				<div class="flex items-center rounded-lg bg-indigo-100 p-4">
+				<div class="flex items-center rounded-lg bg-indigo-100 p-2">
 					<BookOpen class="mr-4 h-8 w-8 text-indigo-600" />
 					<div>
 						<span class="block text-lg font-semibold text-indigo-900"
@@ -122,16 +128,18 @@
 						<span class="text-sm text-indigo-700">Chapters</span>
 					</div>
 				</div>
-				<div class="flex items-center rounded-lg bg-green-100 p-4">
+				<div class="flex items-center rounded-lg bg-green-100 p-2">
 					<Clock class="mr-4 h-8 w-8 text-green-600" />
 					<div>
 						<span class="block text-lg font-semibold text-green-900"
-							>{courseDemo.totalDuration}</span
-						>
+							>{#if totalDuration}
+								{formatDurationWithUnits(totalDuration)}
+							{/if}
+						</span>
 						<span class="text-sm text-green-700">Duration</span>
 					</div>
 				</div>
-				<div class="flex items-center rounded-lg bg-yellow-100 p-4">
+				<div class="flex items-center rounded-lg bg-yellow-100 p-2">
 					<Users class="mr-4 h-8 w-8 text-yellow-600" />
 					<div>
 						<span class="block text-lg font-semibold text-yellow-900"
@@ -140,7 +148,7 @@
 						<span class="text-sm text-yellow-700">Students</span>
 					</div>
 				</div>
-				<div class="flex items-center rounded-lg bg-red-100 p-4">
+				<div class="flex items-center rounded-lg bg-red-100 p-2">
 					<Star class="mr-4 h-8 w-8 text-red-600" />
 					<div>
 						<span class="block text-lg font-semibold text-red-900">{courseDemo.rating}</span>

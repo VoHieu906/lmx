@@ -121,6 +121,7 @@ export const actions = {
 
 		const formData = await request.formData();
 		const video = formData.get('video') as File;
+		const duration = formData.get('duration') as string;
 
 		if (!video) {
 			return fail(400, {
@@ -129,13 +130,13 @@ export const actions = {
 		}
 
 		try {
-			const formData = new FormData();
-			// The key 'videoUrl' must match your PocketBase collection field name
-			formData.append('videoUrl', video);
+			const updateData = new FormData();
+			updateData.append('videoUrl', video);
+			updateData.append('duration', duration); // Add duration to the form data
 
-			await pb.collection('chapters').update(chapterId, formData);
+			await pb.collection('chapters').update(chapterId, updateData);
 			return {
-				message: 'successfully updated chapter video'
+				message: 'Successfully updated chapter video'
 			};
 		} catch (e) {
 			const { message: errorMessage } = e as ClientResponseError;

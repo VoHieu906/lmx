@@ -64,8 +64,41 @@ export function formatCurrency(num: number) {
 		currency: 'USD'
 	}).format(num);
 }
-export function formatDuration(seconds: number): string {
-	const minutes = Math.floor(seconds / 60);
-	const remainingSeconds = seconds % 60;
-	return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+export function formatDuration(duration: string | number): string {
+	const seconds = typeof duration === 'string' ? parseFloat(duration) : duration;
+
+	const hours = Math.floor(seconds / 3600);
+	const minutes = Math.floor((seconds % 3600) / 60);
+	const remainingSeconds = Math.floor(seconds % 60);
+
+	// Format the duration based on whether there are hours
+	if (hours > 0) {
+		return `${hours}:${minutes.toString().padStart(2, '0')}:${remainingSeconds
+			.toString()
+			.padStart(2, '0')}`;
+	} else {
+		return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+	}
+}
+export function formatDurationWithUnits(duration: string | number): string {
+	const seconds = typeof duration === 'string' ? parseFloat(duration) : duration;
+
+	const hours = Math.floor(seconds / 3600);
+	const minutes = Math.floor((seconds % 3600) / 60);
+	const remainingSeconds = Math.floor(seconds % 60);
+
+	// Build the formatted string with units
+	let formattedDuration = '';
+
+	if (hours > 0) {
+		formattedDuration += `${hours}h`;
+	}
+	if (minutes > 0) {
+		formattedDuration += `${formattedDuration ? ' ' : ''}${minutes}m`;
+	}
+	if (remainingSeconds > 0 || (!hours && !minutes)) {
+		formattedDuration += `${formattedDuration ? ' ' : ''}${remainingSeconds}s`;
+	}
+
+	return formattedDuration;
 }

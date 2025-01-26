@@ -16,6 +16,7 @@ export const load = async ({ params, locals: { user, pb } }) => {
 				const imageUrl = pb.files.getURL(course, course.imageUrl);
 				course.imageUrl = imageUrl;
 			}
+			console.log(course.expand?.['chapters(course)']);
 			return course;
 		} catch (e) {
 			redirect(303, '/');
