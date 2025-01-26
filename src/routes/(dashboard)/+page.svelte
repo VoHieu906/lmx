@@ -34,7 +34,7 @@
 			title: 'Chemistry',
 			imageUrl: 'https://via.placeholder.com/300x200?text=Chemistry',
 			price: 29.99,
-			progress: 50,
+
 			category: 'Science',
 			chapterLength: 12
 		},
@@ -43,7 +43,7 @@
 			title: 'History 101',
 			imageUrl: 'https://via.placeholder.com/300x200?text=History',
 			price: 19.99,
-			progress: 20,
+
 			category: 'Social Studies',
 			chapterLength: 8
 		}
@@ -55,7 +55,7 @@
 			title: 'Introduction to Programming',
 			imageUrl: 'https://via.placeholder.com/300x200?text=Programming',
 			price: 0,
-			progress: 80,
+
 			category: 'Computer Science',
 			chapterLength: 15
 		},
@@ -64,7 +64,7 @@
 			title: 'Art Basics',
 			imageUrl: 'https://via.placeholder.com/300x200?text=Art',
 			price: 0,
-			progress: 100,
+
 			category: 'Art & Design',
 			chapterLength: 10
 		}

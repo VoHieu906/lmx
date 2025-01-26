@@ -15,8 +15,6 @@
 	function handleFinalize(e: CustomEvent<DndEvent<Chapter>>) {
 		const { items: newItems } = e.detail;
 	}
-
-	console.log($page);
 </script>
 
 <ul
