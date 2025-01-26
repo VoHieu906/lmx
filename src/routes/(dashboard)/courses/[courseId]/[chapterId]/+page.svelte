@@ -1,16 +1,37 @@
 <script lang="ts">
 	import { formatDuration } from '$lib/utils';
 	import { Play, Pause, Files } from 'lucide-svelte';
-	export let data;
-	let { chapter, course } = data;
+	import { page } from '$app/stores';
+	import { get } from 'svelte/store';
+	import type { Chapter, Course } from '$lib/type.js';
 
-	let otherChapters = course?.expand?.['chapters(course)'] || [];
+	export let data;
+
+	let chapter: Chapter | undefined;
+	let course: Course | undefined;
+	let otherChapters: Chapter[] = [];
+
+	// Watch for changes in the URL parameters
+	$: {
+		const params = get(page).params;
+		const courseId = params.courseId;
+		const chapterId = params.chapterId;
+
+		// Update the data when the URL changes
+		if (courseId && chapterId) {
+			chapter = data.chapter;
+			course = data.course;
+			otherChapters = course?.expand?.['chapters(course)'] || [];
+		}
+	}
 </script>
 
 <div class="container mx-auto px-4 py-8">
-	<h2 class="text-2xl font-bold text-gray-800 md:text-3xl">{chapter?.expand?.course[0].title}</h2>
+	<h2 class="text-2xl font-bold text-gray-800 md:text-3xl">
+		{chapter?.expand?.course[0].title}
+	</h2>
+
 	<div class="flex flex-col gap-8 lg:flex-row">
-		<!-- Left column for video -->
 		<div class="w-full lg:w-2/3">
 			<div class="overflow-hidden rounded-xl bg-gray-900 shadow-lg">
 				<div class="relative aspect-video">
@@ -26,28 +47,27 @@
 					</video>
 				</div>
 			</div>
+
 			<div class="mt-4 space-y-4">
 				<h2 class="text-xl font-bold text-gray-800 md:text-2xl">{chapter?.title}</h2>
 				<p class="text-base text-gray-600 md:text-lg">{chapter?.description}</p>
 			</div>
+
 			<div class="mt-4">
 				{#if chapter?.expand?.['attachments(chapter)']}
 					<h2 class="text-lg font-bold text-gray-800 md:text-xl">Attachments:</h2>
 					{#each chapter?.expand?.['attachments(chapter)'] as attachment}
 						<div
-							class=" mt-3 flex w-[20%] items-center gap-x-2 rounded-md border border-sky-200 bg-sky-100 p-3 text-sky-700"
+							class="mt-3 flex w-[20%] items-center gap-x-2 rounded-md border border-sky-200 bg-sky-100 p-1 text-sky-700"
 						>
-							<Files class="m-2 size-4 flex-shrink-0" />
-							<p class="line-clamp-1 text-xs">
-								{attachment.name}
-							</p>
+							<Files class="m-1 size-4 flex-shrink-0" />
+							<p class="line-clamp-1 text-xs">{attachment.name}</p>
 						</div>
 					{/each}
 				{/if}
 			</div>
 		</div>
 
-		<!-- Right column for chapters -->
 		<div class="w-full lg:w-1/3">
 			<h3 class="mb-4 text-xl font-semibold text-gray-800">Next up</h3>
 			<div class="space-y-4">
@@ -82,6 +102,7 @@
 										/>
 									{/if}
 								</div>
+
 								{#if item.duration}
 									<div
 										class="absolute bottom-1 right-1 rounded bg-black bg-opacity-80 px-1.5 py-0.5 text-xs text-white"
@@ -90,6 +111,7 @@
 									</div>
 								{/if}
 							</div>
+
 							<div class="flex flex-col justify-between p-2">
 								<div>
 									<h4

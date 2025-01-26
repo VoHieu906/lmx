@@ -1,7 +1,7 @@
 import { type Chapter, type Course } from '$lib/type';
 import { redirect } from '@sveltejs/kit';
 
-export const load = async ({ params, depends, locals: { user, pb } }) => {
+export const load = async ({ params, locals: { user, pb } }) => {
 	const { courseId, chapterId } = params;
 	const userId = user?.id;
 	if (!userId) {
