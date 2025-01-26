@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Actions from '$lib/components/Actions.svelte';
-	import AttachmentForm from '$lib/components/AttachmentForm.svelte';
+
 	import CategoryForm from '$lib/components/CategoryForm.svelte';
 	import ChapterForm from '$lib/components/ChapterForm.svelte';
 	import DescriptionForm from '$lib/components/DescriptionForm.svelte';
@@ -13,7 +13,6 @@
 		AlertTriangle,
 		ArrowLeft,
 		CircleDollarSign,
-		File,
 		LayoutDashboard,
 		ListCheck
 	} from 'lucide-svelte';
@@ -87,13 +86,6 @@
 					<h2 class="text-xl">Sell your course</h2>
 				</div>
 				<PriceForm data={data.priceForm} />
-			</div>
-			<div>
-				<div class="flex items-center gap-x-2">
-					<IconBadge icon={File} />
-					<h2 class="text-xl">Resources and Attachments</h2>
-				</div>
-				<AttachmentForm attachments={data.course.expand?.['attachments(course)'] ?? []} />
 			</div>
 		</div>
 	</div>

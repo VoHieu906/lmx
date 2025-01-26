@@ -39,7 +39,7 @@ export const load = async ({ params, depends, locals: { user, pb } }) => {
 	async function getChapter() {
 		try {
 			const chapter = await pb.collection('chapters').getOne<Chapter>(chapterId, {
-				expand: 'course'
+				expand: 'course, attachments(chapter)'
 			});
 			if (chapter?.videoUrl) {
 				const videoUrl = pb.files.getURL(chapter, chapter.videoUrl);

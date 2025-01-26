@@ -19,7 +19,7 @@
 
 <div class="mt-6 rounded-md border bg-muted p-4">
 	<div class="flex items-center justify-between font-medium">
-		Course attachments
+		Chapter attachments
 		<Button on:click={toggleEdit}>
 			{#if isEditing}
 				Cancel
@@ -91,7 +91,7 @@
 				</div>
 			</div>
 			<p class="mt-4 text-xs text-muted-foreground">
-				Add anything your students might need to complete this course
+				Add anything your students might need to complete this chapter
 			</p>
 		</form>
 	{:else if attachments.length}
@@ -99,7 +99,7 @@
 			<div
 				in:fly={{ y: 20 }}
 				out:slide
-				class="m-2 flex w-full items-center gap-x-2 rounded-md border border-sky-200 bg-sky-100 p-3 text-sky-700"
+				class="mt-3 flex w-full items-center gap-x-2 rounded-md border border-sky-200 bg-sky-100 p-3 text-sky-700"
 			>
 				<Files class="m-2 size-4 flex-shrink-0" />
 				<p class="line-clamp-1 text-xs">

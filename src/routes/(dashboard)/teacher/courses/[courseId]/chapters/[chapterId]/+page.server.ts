@@ -9,7 +9,9 @@ export const load = async ({ params, locals: { pb } }) => {
 	const chapterId = params.chapterId;
 	async function getChapter() {
 		try {
-			const chapter = await pb.collection('chapters').getOne<Chapter>(chapterId);
+			const chapter = await pb.collection('chapters').getOne<Chapter>(chapterId, {
+				expand: ' attachments(chapter)'
+			});
 			if (chapter.videoUrl) {
 				const videoUrl = pb.files.getURL(chapter, chapter.videoUrl);
 				chapter.videoUrl = videoUrl;
@@ -229,6 +231,55 @@ export const actions = {
 					message: errorMessage
 				});
 			}
+		}
+	},
+	createAttachment: async (event) => {
+		const {
+			locals: { pb },
+			params,
+			request
+		} = event;
+		const { chapterId } = params;
+		const formData = await request.formData();
+		const file = formData.get('file');
+
+		// Check if file is indeed a File object
+		if (file && file instanceof File) {
+			try {
+				await pb.collection('attachments').create({
+					name: file.name,
+					chapter: chapterId,
+					url: file
+				});
+				return { message: 'successfully added your chapter attachment' };
+			} catch (e) {
+				const { message: errorMessage } = e as ClientResponseError;
+				return fail(400, {
+					message: errorMessage
+				});
+			}
+		} else {
+			return fail(400, {
+				message: 'No file provided or invalid file'
+			});
+		}
+	},
+
+	deleteAttachment: async (event) => {
+		const {
+			locals: { pb },
+			request
+		} = event;
+
+		const formData = await request.formData();
+		const id = formData.get('id') as string;
+		try {
+			await pb.collection('attachments').delete(id);
+		} catch (e) {
+			const { message: errorMessage } = e as ClientResponseError;
+			return fail(400, {
+				message: errorMessage
+			});
 		}
 	}
 };

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import * as Alert from '$lib/components/ui/alert';
-	import { AlertTriangle, ArrowLeft, Eye, LayoutDashboard, Video } from 'lucide-svelte';
+	import { AlertTriangle, ArrowLeft, Eye, LayoutDashboard, Video, File } from 'lucide-svelte';
 	import { page } from '$app/stores';
 	import IconBadge from '$lib/components/IconBadge.svelte';
 	import ChapterTitleForm from '$lib/components/ChapterTitleForm.svelte';
@@ -9,8 +9,9 @@
 	import ChapterVideoForm from '$lib/components/ChapterVideoForm.svelte';
 	import ChapterDescriptionForm from '$lib/components/ChapterDescriptionForm.svelte';
 	import ThumbnailForm from '$lib/components/ThumbnailForm.svelte';
+	import ChapterAttachmentForm from '$lib/components/ChapterAttachmentForm.svelte';
 	export let data;
-	console.log(data.chapter);
+
 	$: chapter = data.chapter;
 	$: requiredFields = [chapter.title, chapter.description, chapter.videoUrl, chapter.thumbnailUrl];
 	$: totalFields = requiredFields.length;
@@ -63,6 +64,13 @@
 					<h2 class="text-xl">Access Settings</h2>
 				</div>
 				<ChapterAccessForm data={data.chapterAccessForm} />
+			</div>
+			<div>
+				<div class="flex items-center gap-x-2">
+					<IconBadge icon={File} />
+					<h2 class="text-xl">Resources and Attachments</h2>
+				</div>
+				<ChapterAttachmentForm attachments={data.chapter.expand?.['attachments(chapter)'] || []} />
 			</div>
 		</div>
 		<div>

@@ -20,7 +20,7 @@ export const load = async ({ params, locals: { user, pb } }) => {
 	async function getCourse() {
 		try {
 			const course = await pb.collection('courses').getOne<Course>(courseId, {
-				expand: 'category, attachments(course), chapters(course)'
+				expand: 'category, chapters(course)'
 			});
 			if (course.imageUrl) {
 				const imageUrl = pb.files.getURL(course, course.imageUrl);
@@ -175,48 +175,7 @@ export const actions = {
 			});
 		}
 	},
-	createAttachment: async (event) => {
-		const {
-			locals: { pb },
-			params,
-			request
-		} = event;
-		const { courseId } = params;
-		const formData = await request.formData();
-		const file = formData.get('file');
-		try {
-			if (file) {
-				await pb.collection('attachments').create({
-					name: file.name,
-					course: courseId,
-					url: file
-				});
-				return { message: 'successfully added your course attachment' };
-			}
-		} catch (e) {
-			const { message: errorMessage } = e as ClientResponseError;
-			return fail(400, {
-				message: errorMessage
-			});
-		}
-	},
-	deleteAttachment: async (event) => {
-		const {
-			locals: { pb },
-			request
-		} = event;
 
-		const formData = await request.formData();
-		const id = formData.get('id') as string;
-		try {
-			await pb.collection('attachments').delete(id);
-		} catch (e) {
-			const { message: errorMessage } = e as ClientResponseError;
-			return fail(400, {
-				message: errorMessage
-			});
-		}
-	},
 	createChapter: async (event) => {
 		const {
 			locals: { pb },

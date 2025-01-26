@@ -1,12 +1,10 @@
 <script lang="ts">
-	import { page } from '$app/stores';
 	import { formatDuration } from '$lib/utils';
-	import { Play, Pause } from 'lucide-svelte';
+	import { Play, Pause, Files } from 'lucide-svelte';
 	export let data;
 	let { chapter, course } = data;
 
 	let otherChapters = course?.expand?.['chapters(course)'] || [];
-	console.log(otherChapters);
 </script>
 
 <div class="container mx-auto px-4 py-8">
@@ -31,6 +29,21 @@
 			<div class="mt-4 space-y-4">
 				<h2 class="text-xl font-bold text-gray-800 md:text-2xl">{chapter?.title}</h2>
 				<p class="text-base text-gray-600 md:text-lg">{chapter?.description}</p>
+			</div>
+			<div class="mt-4">
+				{#if chapter?.expand?.['attachments(chapter)']}
+					<h2 class="text-lg font-bold text-gray-800 md:text-xl">Attachments:</h2>
+					{#each chapter?.expand?.['attachments(chapter)'] as attachment}
+						<div
+							class=" mt-3 flex w-[20%] items-center gap-x-2 rounded-md border border-sky-200 bg-sky-100 p-3 text-sky-700"
+						>
+							<Files class="m-2 size-4 flex-shrink-0" />
+							<p class="line-clamp-1 text-xs">
+								{attachment.name}
+							</p>
+						</div>
+					{/each}
+				{/if}
 			</div>
 		</div>
 

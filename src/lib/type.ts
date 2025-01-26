@@ -7,7 +7,7 @@ export type Course = RecordModel &
 		expand?: {
 			category: Category;
 			user: AuthModel;
-			'attachments(course)'?: Attachment[];
+
 			'chapters(course)'?: Chapter[];
 			'purchase(course)'?: Purchase[];
 		};
@@ -18,9 +18,9 @@ export type Category = RecordModel & {
 export type Attachment = RecordModel & {
 	name: string;
 	url: File;
-	course: string;
+	chapter: string;
 	expand: {
-		course: Course;
+		chapter: Chapter;
 	};
 };
 export type Chapter = RecordModel & {
@@ -31,6 +31,9 @@ export type Chapter = RecordModel & {
 	isPublished: boolean;
 	isFree: boolean;
 	course: string;
+	expand?: {
+		'attachments(chapter)'?: Attachment[];
+	};
 };
 
 export type Purchase = RecordModel & {
