@@ -1,19 +1,12 @@
 <script lang="ts">
-	import { invalidate } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { formatDuration } from '$lib/utils';
 	import { Play, Pause } from 'lucide-svelte';
 	export let data;
 	let { chapter, course } = data;
 
-	$: {
-		const paramId = $page.url.searchParams.get('id') || $page.params.id;
-		if (paramId && paramId !== chapter?.id) {
-			invalidate(`/courses/${course?.id}/${paramId}`);
-		}
-	}
-
 	let otherChapters = course?.expand?.['chapters(course)'] || [];
+	console.log(otherChapters);
 </script>
 
 <div class="container mx-auto px-4 py-8">
@@ -55,7 +48,15 @@
 					>
 						<div class="flex space-x-2 p-1">
 							<div class="relative flex-shrink-0">
-								<div class="h-[101px] w-[180px] animate-pulse rounded-md bg-gray-200"></div>
+								{#if item.thumbnailUrl}
+									<img
+										src={item.thumbnailUrl}
+										alt={item.title}
+										class="h-[101px] w-[180px] rounded-md object-cover transition-all duration-300 group-hover:scale-105"
+									/>
+								{:else}
+									<div class="h-[101px] w-[180px] animate-pulse rounded-md bg-gray-200"></div>
+								{/if}
 
 								<div
 									class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 transition-all duration-300 group-hover:bg-opacity-50"

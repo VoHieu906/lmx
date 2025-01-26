@@ -1,9 +1,7 @@
 import { type Chapter, type Course } from '$lib/type';
-import { fail, redirect } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 
 export const load = async ({ params, depends, locals: { user, pb } }) => {
-	depends('course:chapter'); // Add this line to make the load function reactive
-
 	const { courseId, chapterId } = params;
 	const userId = user?.id;
 	if (!userId) {
@@ -24,6 +22,9 @@ export const load = async ({ params, depends, locals: { user, pb } }) => {
 				course.expand['chapters(course)'] = course.expand['chapters(course)'].map((chapter) => {
 					if (chapter.videoUrl) {
 						chapter.videoUrl = pb.files.getURL(chapter, chapter.videoUrl);
+					}
+					if (chapter.thumbnailUrl) {
+						chapter.thumbnailUrl = pb.files.getURL(chapter, chapter.thumbnailUrl);
 					}
 					return chapter;
 				});

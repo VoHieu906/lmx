@@ -8,10 +8,11 @@
 	import ChapterAccessForm from '$lib/components/ChapterAccessForm.svelte';
 	import ChapterVideoForm from '$lib/components/ChapterVideoForm.svelte';
 	import ChapterDescriptionForm from '$lib/components/ChapterDescriptionForm.svelte';
+	import ThumbnailForm from '$lib/components/ThumbnailForm.svelte';
 	export let data;
-
+	console.log(data.chapter);
 	$: chapter = data.chapter;
-	$: requiredFields = [chapter.title, chapter.description, chapter.videoUrl];
+	$: requiredFields = [chapter.title, chapter.description, chapter.videoUrl, chapter.thumbnailUrl];
 	$: totalFields = requiredFields.length;
 	$: completedFields = requiredFields.filter(Boolean).length;
 	$: completionText = `(${completedFields}/${totalFields})`;
@@ -70,6 +71,7 @@
 				<h2 class="text-xl">Add a video</h2>
 			</div>
 			<ChapterVideoForm initialData={data.chapter} />
+			<ThumbnailForm thumbnailUrl={chapter.thumbnailUrl} />
 		</div>
 	</div>
 </div>

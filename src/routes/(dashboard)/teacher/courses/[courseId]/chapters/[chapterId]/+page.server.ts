@@ -14,6 +14,10 @@ export const load = async ({ params, locals: { pb } }) => {
 				const videoUrl = pb.files.getURL(chapter, chapter.videoUrl);
 				chapter.videoUrl = videoUrl;
 			}
+			if (chapter.thumbnailUrl) {
+				const thumbnailUrl = pb.files.getURL(chapter, chapter.thumbnailUrl);
+				chapter.thumbnailUrl = thumbnailUrl;
+			}
 			return chapter;
 		} catch (e) {
 			const { status } = e as ClientResponseError;
@@ -204,6 +208,27 @@ export const actions = {
 			return fail(400, {
 				message: errorMessage
 			});
+		}
+	},
+	updateThumbnail: async (event) => {
+		const {
+			locals: { pb },
+			params,
+			request
+		} = event;
+		const { chapterId } = params;
+		const formData = await request.formData();
+		const thumbnail = formData.get('thumbnail');
+		if (thumbnail instanceof File) {
+			try {
+				await pb.collection('chapters').update(chapterId, { thumbnailUrl: thumbnail });
+				return { message: 'successfully updated course thumbnail' };
+			} catch (e) {
+				const { message: errorMessage } = e as ClientResponseError;
+				return fail(400, {
+					message: errorMessage
+				});
+			}
 		}
 	}
 };
