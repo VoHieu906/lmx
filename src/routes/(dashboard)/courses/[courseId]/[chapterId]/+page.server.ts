@@ -1,24 +1,25 @@
 import { type Chapter, type Course } from '$lib/type';
 import { fail, redirect } from '@sveltejs/kit';
 
-export const load = async ({ params, locals: { user, pb } }) => {
+export const load = async ({ params, depends, locals: { user, pb } }) => {
+	depends('course:chapter'); // Add this line to make the load function reactive
+
 	const { courseId, chapterId } = params;
 	const userId = user?.id;
 	if (!userId) {
 		redirect(308, '/');
 	}
+
 	async function getCourse() {
 		try {
 			const course = await pb.collection('courses').getOne<Course>(courseId, {
 				expand: 'chapters(course),user'
 			});
 
-			// Update course image URL
 			if (course?.imageUrl) {
 				course.imageUrl = pb.files.getURL(course, course.imageUrl);
 			}
 
-			// Update videoUrl for each chapter
 			if (course?.expand?.['chapters(course)']) {
 				course.expand['chapters(course)'] = course.expand['chapters(course)'].map((chapter) => {
 					if (chapter.videoUrl) {
@@ -33,6 +34,7 @@ export const load = async ({ params, locals: { user, pb } }) => {
 			console.log('error:', e);
 		}
 	}
+
 	async function getChapter() {
 		try {
 			const chapter = await pb.collection('chapters').getOne<Chapter>(chapterId, {
@@ -47,6 +49,7 @@ export const load = async ({ params, locals: { user, pb } }) => {
 			console.log('error:', e);
 		}
 	}
+
 	const [chapter, course] = await Promise.all([getChapter(), getCourse()]);
 	return { chapter, course };
 };
