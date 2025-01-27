@@ -3,7 +3,8 @@
 	import { Play, Pause, Files } from 'lucide-svelte';
 	import { page } from '$app/stores';
 	import { get } from 'svelte/store';
-	import type { Chapter, Course } from '$lib/type.js';
+	import type { Chapter, Course, Subscription } from '$lib/type.js';
+	import { toast } from 'svelte-sonner';
 
 	export let data;
 
@@ -11,17 +12,60 @@
 	let course: Course | undefined;
 	let otherChapters: Chapter[] = [];
 
-	// Watch for changes in the URL parameters
+	// Reactive block to handle page params
 	$: {
-		const params = get(page).params;
-		const courseId = params.courseId;
-		const chapterId = params.chapterId;
-
-		// Update the data when the URL changes
+		const { courseId, chapterId } = get(page).params;
 		if (courseId && chapterId) {
 			chapter = data.chapter;
 			course = data.course;
+
 			otherChapters = course?.expand?.['chapters(course)'] || [];
+		}
+	}
+
+	let progress = data.subscription?.progress ?? 0;
+	let completedChapters = data.subscription?.completedChapters ?? [];
+
+	// Function to determine progress bar color based on progress
+	function getProgressColor(progress: number): string {
+		if (progress >= 100) return 'bg-blue-600'; // Completed
+		if (progress >= 75) return 'bg-green-500'; // Near completion
+		if (progress >= 50) return 'bg-yellow-400'; // Good progress
+		if (progress >= 25) return 'bg-orange-400'; // Moderate progress
+		return 'bg-red-500'; // Low progress
+	}
+
+	async function markChapterAsCompleted(chapterId: string) {
+		if (progress >= 100 || completedChapters.includes(chapterId)) return;
+
+		try {
+			const res = await fetch('/api/progress', {
+				method: 'PATCH',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					userId: data.user?.id,
+					courseId: data.course?.id,
+					chapterId
+				})
+			});
+
+			const responseData = await res.json();
+			if (res.ok) {
+				toast.success(`Progress updated: ${responseData.progress}%`);
+				progress = responseData.progress;
+				completedChapters = [...completedChapters, chapterId];
+			} else {
+				toast.error(responseData.error || 'Failed to update progress');
+			}
+		} catch (e) {
+			toast.error('Error updating progress');
+		}
+	}
+
+	// Handle video end and mark chapter as completed
+	function handleVideoEnd() {
+		if (data.chapter?.id && progress < 100) {
+			markChapterAsCompleted(data.chapter.id);
 		}
 	}
 </script>
@@ -31,7 +75,7 @@
 		{chapter?.expand?.course[0].title}
 	</h2>
 
-	<div class="flex flex-col gap-8 lg:flex-row">
+	<div class="mt-8 flex flex-col gap-8 lg:flex-row">
 		<div class="w-full lg:w-2/3">
 			<div class="overflow-hidden rounded-xl bg-gray-900 shadow-lg">
 				<div class="relative aspect-video">
@@ -41,10 +85,25 @@
 						controls
 						crossorigin="anonymous"
 						class="absolute inset-0 h-full w-full"
+						on:ended={handleVideoEnd}
 					>
 						<track kind="captions" label="English" srclang="en" default />
 						Your browser does not support the video tag.
 					</video>
+				</div>
+			</div>
+
+			<!-- Progress Bar (Dynamic and colorful) -->
+			<div class="mt-4">
+				<div class="flex items-center justify-between">
+					<span class="text-sm font-medium text-gray-600">Progress</span>
+					<span class="text-sm font-medium text-blue-600">{progress}%</span>
+				</div>
+				<div class="mt-1 h-1.5 w-full rounded-full bg-gray-200">
+					<div
+						class={`h-1.5 rounded-full transition-all duration-300 ease-in-out ${getProgressColor(progress)}`}
+						style={`width: ${progress}%`}
+					></div>
 				</div>
 			</div>
 

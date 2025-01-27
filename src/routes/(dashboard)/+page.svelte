@@ -10,21 +10,21 @@
 			title: 'Mathematics 101',
 			description: 'Basic concepts of algebra, geometry, and calculus.',
 			progress: 80,
-			image: 'https://via.placeholder.com/300x200?text=Mathematics'
+			image: ''
 		},
 		{
 			id: 2,
 			title: 'Biology',
 			description: 'Introduction to cell structure and human anatomy.',
 			progress: 50,
-			image: 'https://via.placeholder.com/300x200?text=Biology'
+			image: ''
 		},
 		{
 			id: 3,
 			title: 'Physics',
 			description: 'Understanding motion, energy, and forces.',
 			progress: 30,
-			image: 'https://via.placeholder.com/300x200?text=Physics'
+			image: ''
 		}
 	];
 
@@ -32,7 +32,7 @@
 		{
 			id: '4',
 			title: 'Chemistry',
-			imageUrl: 'https://via.placeholder.com/300x200?text=Chemistry',
+			imageUrl: '',
 			price: 29.99,
 
 			category: 'Science',
@@ -41,7 +41,7 @@
 		{
 			id: '5',
 			title: 'History 101',
-			imageUrl: 'https://via.placeholder.com/300x200?text=History',
+			imageUrl: '',
 			price: 19.99,
 
 			category: 'Social Studies',
@@ -53,7 +53,7 @@
 		{
 			id: '6',
 			title: 'Introduction to Programming',
-			imageUrl: 'https://via.placeholder.com/300x200?text=Programming',
+			imageUrl: '',
 			price: 0,
 
 			category: 'Computer Science',
@@ -62,7 +62,7 @@
 		{
 			id: '7',
 			title: 'Art Basics',
-			imageUrl: 'https://via.placeholder.com/300x200?text=Art',
+			imageUrl: '',
 			price: 0,
 
 			category: 'Art & Design',

@@ -1,4 +1,4 @@
-import type { Course } from '$lib/type';
+import type { Course, Subscription } from '$lib/type';
 import { redirect } from '@sveltejs/kit';
 
 export const load = async ({ params, locals: { user, pb } }) => {
@@ -21,16 +21,17 @@ export const load = async ({ params, locals: { user, pb } }) => {
 			redirect(303, '/');
 		}
 	}
-	async function checkSubscription() {
+	async function getSubscription() {
 		try {
-			const subscriptions = await pb.collection('subscriptions').getFullList({
-				filter: `user = "${userId}" && course = "${courseId}"`
-			});
-			return subscriptions.length > 0; // Return true if subscription exists
+			const subscription = await pb
+				.collection('subscriptions')
+				.getFirstListItem<Subscription>(`user = "${userId}" && course = "${courseId}"`);
+			return subscription;
 		} catch (e) {
-			return false;
+			return null;
 		}
 	}
-	const [course, isSubscribed] = await Promise.all([getCourse(), checkSubscription()]);
-	return { course, isSubscribed };
+
+	const [course, subscription] = await Promise.all([getCourse(), getSubscription()]);
+	return { course, subscription, isSubscribed: !!subscription };
 };

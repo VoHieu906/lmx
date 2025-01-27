@@ -1,4 +1,4 @@
-import { type Chapter, type Course } from '$lib/type';
+import { type Subscription, type Chapter, type Course } from '$lib/type';
 import { redirect } from '@sveltejs/kit';
 
 export const load = async ({ params, locals: { user, pb } }) => {
@@ -35,7 +35,16 @@ export const load = async ({ params, locals: { user, pb } }) => {
 			console.log('error:', e);
 		}
 	}
-
+	async function getSubscription() {
+		try {
+			const subscription = await pb
+				.collection('subscriptions')
+				.getFirstListItem<Subscription>(`user = "${userId}" && course = "${courseId}"`);
+			return subscription;
+		} catch (e) {
+			return null;
+		}
+	}
 	async function getChapter() {
 		try {
 			const chapter = await pb.collection('chapters').getOne<Chapter>(chapterId, {
@@ -51,6 +60,10 @@ export const load = async ({ params, locals: { user, pb } }) => {
 		}
 	}
 
-	const [chapter, course] = await Promise.all([getChapter(), getCourse()]);
-	return { chapter, course };
+	const [chapter, course, subscription] = await Promise.all([
+		getChapter(),
+		getCourse(),
+		getSubscription()
+	]);
+	return { chapter, course, subscription, isSubscribed: !!subscription };
 };

@@ -44,4 +44,5 @@ export type Subscription = RecordModel & {
 	user: string;
 	course: string;
 	progress: number;
+	completedChapters: string[];
 };
