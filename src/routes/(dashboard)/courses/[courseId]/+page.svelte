@@ -13,11 +13,6 @@
 	} from 'lucide-svelte';
 
 	const courseDemo = {
-		title: 'Advanced SvelteKit Development',
-		description:
-			'Master SvelteKit and build scalable, performant web applications. This comprehensive course covers everything from the basics to advanced topics like server-side rendering, API routes, and deployment strategies.',
-		totalChapters: 12,
-		totalDuration: '10 h 30 m',
 		enrolledStudents: 1234,
 		rating: 4.8,
 		instructor: {
@@ -32,14 +27,44 @@
 	};
 	import { page } from '$app/stores';
 	import { formatDurationWithUnits } from '$lib/utils.js';
+	import { toast } from 'svelte-sonner';
 	export let data;
-	let { course } = data;
+
+	let { course, isSubscribed } = data;
 	let chapters = course.expand?.['chapters(course)'];
 
 	let totalDuration = chapters?.reduce((acc, ch) => {
 		let chdu = parseFloat(ch.duration);
 		return acc + chdu;
 	}, 0);
+
+	let userId = data?.user?.id;
+	let courseId = data.course.id;
+
+	async function subscribe() {
+		try {
+			const res = await fetch('/api/subscribe', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ userId, courseId })
+			});
+
+			const responseData = await res.json();
+
+			if (res.ok) {
+				if (responseData.message === 'User is already subscribed to this course') {
+					toast.info(responseData.message); // Display as an info toast
+				} else {
+					toast.success('Subscription successful'); // Display as a success toast
+					isSubscribed = true; // Update the state to reflect the subscription
+				}
+			} else {
+				toast.error(responseData.error || 'Failed to subscribe'); // Display as an error toast
+			}
+		} catch (e) {
+			toast.error('Error subscribing to course');
+		}
+	}
 </script>
 
 <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -100,19 +125,23 @@
 			</div>
 
 			<div class="flex justify-center space-x-4">
-				<button
-					class="flex items-center rounded-md bg-indigo-600 px-6 py-3 font-semibold text-white transition duration-300 hover:bg-indigo-700"
-				>
-					<GraduationCap class="mr-2 h-5 w-5" />
-					Enroll in CourseDemo
-				</button>
-				<a
-					href={`${$page.url.pathname}/${course.expand?.['chapters(course)']?.[0].id}`}
-					class="flex items-center rounded-md bg-green-600 px-6 py-3 font-semibold text-white transition duration-300 hover:bg-green-700"
-				>
-					<PlayCircle class="mr-2 h-5 w-5" />
-					Start CourseDemo
-				</a>
+				{#if isSubscribed}
+					<a
+						href={`${$page.url.pathname}/${course.expand?.['chapters(course)']?.[0].id}`}
+						class="flex items-center rounded-md bg-green-600 px-6 py-3 font-semibold text-white transition duration-300 hover:bg-green-700"
+					>
+						<PlayCircle class="mr-2 h-5 w-5" />
+						Start CourseDemo
+					</a>
+				{:else}
+					<button
+						on:click={subscribe}
+						class="flex items-center rounded-md bg-indigo-600 px-6 py-3 font-semibold text-white transition duration-300 hover:bg-indigo-700"
+					>
+						<GraduationCap class="mr-2 h-5 w-5" />
+						Enroll in CourseDemo
+					</button>
+				{/if}
 			</div>
 		</div>
 

@@ -59,16 +59,16 @@
 					</div>
 				</div>
 			{:else}
-				<div class="mt-auto flex items-center justify-between">
+				<div class="mt-auto flex items-center justify-center">
 					<span class="text-lg font-bold text-blue-600">{formatCurrency(price || 0)}</span>
-					<Button
+					<!-- <Button
 						variant="outline"
 						size="sm"
 						class="transition-colors duration-300 group-hover:bg-blue-600 group-hover:text-white"
 					>
 						<DollarSign class="mr-1 h-3 w-3" />
 						Buy Now
-					</Button>
+					</Button> -->
 				</div>
 			{/if}
 		</div>

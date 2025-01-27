@@ -40,9 +40,8 @@ export type Purchase = RecordModel & {
 	user: string;
 	course: string;
 };
-export type Progress = {
-	progress: number | null;
-};
-export type CourseWithProgressWithCategory = Course & {
-	progress: number | null;
+export type Subscription = RecordModel & {
+	user: string;
+	course: string;
+	progress: number;
 };
