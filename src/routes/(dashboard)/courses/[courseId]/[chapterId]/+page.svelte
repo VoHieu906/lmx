@@ -3,8 +3,9 @@
 	import { Play, Pause, Files } from 'lucide-svelte';
 	import { page } from '$app/stores';
 	import { get } from 'svelte/store';
-	import type { Chapter, Course, Subscription } from '$lib/type.js';
+	import type { Chapter, Course } from '$lib/type.js';
 	import { toast } from 'svelte-sonner';
+	import ChapterCommentForm from '$lib/components/ChapterCommentForm.svelte';
 
 	export let data;
 
@@ -18,7 +19,6 @@
 		if (courseId && chapterId) {
 			chapter = data.chapter;
 			course = data.course;
-
 			otherChapters = course?.expand?.['chapters(course)'] || [];
 		}
 	}
@@ -68,6 +68,7 @@
 			markChapterAsCompleted(data.chapter.id);
 		}
 	}
+	console.log(data.comment);
 </script>
 
 <div class="container mx-auto px-4 py-2">
@@ -134,72 +135,16 @@
 			</div>
 			<div class="mt-8">
 				<!-- Comment Form -->
-				<div class="mt-4 flex items-center space-x-4">
-					<img
-						src="https://via.placeholder.com/40"
-						alt="User Avatar"
-						class="h-10 w-10 rounded-full"
-					/>
-					<textarea
-						class="w-full rounded-md border border-gray-300 p-3 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
-						placeholder="Add a comment..."
-						rows="4"
-					></textarea>
-				</div>
-				<button class="mt-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-					>Submit</button
-				>
+				<ChapterCommentForm data={data.chapterCommentForm} />
 
 				<!-- Display Comments -->
 				<div class="mt-6 space-y-4">
-					<div class="flex space-x-4 rounded-lg bg-gray-100 p-4 shadow">
-						<img
-							src="https://via.placeholder.com/40"
-							alt="User Avatar"
-							class="h-10 w-10 rounded-full"
-						/>
+					<div class="flex space-x-4 p-4">
+						<img src="" alt="User Avatar" class="h-10 w-10 rounded-full" />
 						<div class="flex-1">
 							<div class="flex justify-between">
 								<p class="text-sm font-medium text-gray-700">comment.username</p>
 								<p class="text-xs text-gray-500">1 hour ago</p>
-							</div>
-							<p class="mt-1 text-gray-600">comment.text</p>
-							<div class="mt-2 flex space-x-4 text-sm text-gray-500">
-								<button class="hover:text-blue-500">Like</button>
-								<button class="hover:text-blue-500">Reply</button>
-							</div>
-						</div>
-					</div>
-
-					<div class="flex space-x-4 rounded-lg bg-gray-100 p-4 shadow">
-						<img
-							src="https://via.placeholder.com/40"
-							alt="User Avatar"
-							class="h-10 w-10 rounded-full"
-						/>
-						<div class="flex-1">
-							<div class="flex justify-between">
-								<p class="text-sm font-medium text-gray-700">comment.username</p>
-								<p class="text-xs text-gray-500">2 hours ago</p>
-							</div>
-							<p class="mt-1 text-gray-600">comment.text</p>
-							<div class="mt-2 flex space-x-4 text-sm text-gray-500">
-								<button class="hover:text-blue-500">Like</button>
-								<button class="hover:text-blue-500">Reply</button>
-							</div>
-						</div>
-					</div>
-
-					<div class="flex space-x-4 rounded-lg bg-gray-100 p-4 shadow">
-						<img
-							src="https://via.placeholder.com/40"
-							alt="User Avatar"
-							class="h-10 w-10 rounded-full"
-						/>
-						<div class="flex-1">
-							<div class="flex justify-between">
-								<p class="text-sm font-medium text-gray-700">comment.username</p>
-								<p class="text-xs text-gray-500">3 hours ago</p>
 							</div>
 							<p class="mt-1 text-gray-600">comment.text</p>
 							<div class="mt-2 flex space-x-4 text-sm text-gray-500">

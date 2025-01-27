@@ -127,42 +127,45 @@
 
 			<div class="flex justify-center space-x-4">
 				{#if isSubscribed}
-					<div class="relative flex h-16 w-16 items-center justify-center">
-						<svg class="absolute inset-0 h-full w-full" viewBox="0 0 36 36">
-							<!-- Background Circle -->
-							<circle
-								stroke="currentColor"
-								stroke-width="3"
-								fill="transparent"
-								r="15.915"
-								cx="18"
-								cy="18"
-								class="text-gray-300"
-							></circle>
+					{#if progress}
+						<div class="relative flex h-16 w-16 items-center justify-center">
+							<svg class="absolute inset-0 h-full w-full" viewBox="0 0 36 36">
+								<!-- Background Circle -->
+								<circle
+									stroke="currentColor"
+									stroke-width="3"
+									fill="transparent"
+									r="15.915"
+									cx="18"
+									cy="18"
+									class="text-gray-300"
+								></circle>
 
-							<!-- Progress Circle -->
-							<circle
-								stroke-width="3"
-								fill="transparent"
-								r="15.915"
-								cx="18"
-								cy="18"
-								style="stroke-dasharray: 100, 100; stroke-dashoffset: {100 - progress};"
-								class={`transition-all duration-300 ${
-									progress >= 100
-										? 'stroke-blue-600'
-										: progress >= 75
-											? 'stroke-green-500'
-											: progress >= 50
-												? 'stroke-yellow-400'
-												: progress >= 25
-													? 'stroke-orange-400'
-													: 'stroke-red-500'
-								}`}
-							></circle>
-						</svg>
-						<span class="absolute text-sm font-bold">{progress}%</span>
-					</div>
+								<!-- Progress Circle -->
+								<circle
+									stroke-width="3"
+									fill="transparent"
+									r="15.915"
+									cx="18"
+									cy="18"
+									style="stroke-dasharray: 100, 100; stroke-dashoffset: {100 - progress};"
+									class={`transition-all duration-300 ${
+										progress >= 100
+											? 'stroke-blue-600'
+											: progress >= 75
+												? 'stroke-green-500'
+												: progress >= 50
+													? 'stroke-yellow-400'
+													: progress >= 25
+														? 'stroke-orange-400'
+														: 'stroke-red-500'
+									}`}
+								></circle>
+							</svg>
+							<span class="absolute text-sm font-bold">{progress}%</span>
+						</div>
+					{/if}
+
 					<a
 						href={`${$page.url.pathname}/${course.expand?.['chapters(course)']?.[0].id}`}
 						class="flex items-center rounded-md bg-green-600 px-6 py-3 font-semibold text-white transition duration-300 hover:bg-green-700"

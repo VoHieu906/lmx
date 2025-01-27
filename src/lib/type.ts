@@ -46,3 +46,8 @@ export type Subscription = RecordModel & {
 	progress: number;
 	completedChapters: string[];
 };
+export type Comment = RecordModel & {
+	user: string;
+	chapter: string;
+	content: string;
+};

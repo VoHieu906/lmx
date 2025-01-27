@@ -35,3 +35,4 @@ export const load = async ({ params, locals: { user, pb } }) => {
 	const [course, subscription] = await Promise.all([getCourse(), getSubscription()]);
 	return { course, subscription, isSubscribed: !!subscription };
 };
+export const actions = {};

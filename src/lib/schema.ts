@@ -36,6 +36,10 @@ export const chapterTitleSchema = z.object({
 export const chapterDescriptionSchema = z.object({
 	description: z.string()
 });
+export const chapterCommentSchema = z.object({
+	comment: z.string().min(1),
+	file: z.instanceof(File).optional()
+});
 export const chapterAccessSchema = z.object({
 	isFree: z.boolean()
 });

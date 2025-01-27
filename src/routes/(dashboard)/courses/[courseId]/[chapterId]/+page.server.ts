@@ -1,5 +1,8 @@
-import { type Subscription, type Chapter, type Course } from '$lib/type';
+import { chapterCommentSchema } from '$lib/schema.js';
+import { type Subscription, type Chapter, type Course, type Comment } from '$lib/type';
 import { redirect } from '@sveltejs/kit';
+import { fail, superValidate } from 'sveltekit-superforms';
+import { zod } from 'sveltekit-superforms/adapters';
 
 export const load = async ({ params, locals: { user, pb } }) => {
 	const { courseId, chapterId } = params;
@@ -59,11 +62,83 @@ export const load = async ({ params, locals: { user, pb } }) => {
 			console.log('error:', e);
 		}
 	}
-
-	const [chapter, course, subscription] = await Promise.all([
+	async function getComment() {
+		try {
+			const comment = await pb
+				.collection('comments')
+				.getFirstListItem<Comment>(`chapter = "${chapterId}"`);
+			return comment;
+		} catch (e) {
+			console.log('error:', e);
+		}
+	}
+	const [chapter, course, subscription, comment] = await Promise.all([
 		getChapter(),
 		getCourse(),
-		getSubscription()
+		getSubscription(),
+		getComment()
 	]);
-	return { chapter, course, subscription, isSubscribed: !!subscription };
+	const chapterCommentForm = await superValidate(zod(chapterCommentSchema));
+	return {
+		chapter,
+		course,
+		subscription,
+		isSubscribed: !!subscription,
+		chapterCommentForm,
+		comment
+	};
+};
+export const actions = {
+	createComment: async (event) => {
+		const {
+			locals: { pb, user },
+			params,
+			request
+		} = event;
+
+		const { chapterId } = params;
+
+		// Get the form data once and work with it
+		const formData = await request.formData();
+
+		// Validate the comment content using formData
+		const commentContent = formData.get('comment') as string | null;
+
+		if (!commentContent) {
+			return fail(400, { message: 'Comment is required' });
+		}
+
+		console.log('Form Data: ', commentContent); // Debug the comment data
+
+		// Extract file (if any) from the formData
+		const file = formData.get('file') as File | null;
+
+		// Debug the file
+		console.log('Uploaded file: ', file);
+
+		const commentData: any = {
+			user: user?.id,
+			chapter: chapterId,
+			content: commentContent
+		};
+
+		if (file && file.size > 0) {
+			commentData.file = file;
+			console.log('File attached to comment: ', file);
+		}
+
+		try {
+			// Create the comment in the database (with or without file)
+			await pb.collection('comments').create(commentData);
+
+			return {
+				message: 'Comment created successfully!'
+			};
+		} catch (e) {
+			console.error('Error creating comment: ', e); // Log error for debugging
+			return fail(500, {
+				message: 'Failed to create comment. Please try again.'
+			});
+		}
+	}
 };
