@@ -70,13 +70,34 @@
 	}
 </script>
 
-<div class="container mx-auto px-4 py-8">
-	<h2 class="text-2xl font-bold text-gray-800 md:text-3xl">
+<div class="container mx-auto px-4 py-2">
+	<!-- Highlighted Title -->
+	<h2
+		class="rounded bg-gradient-to-r from-blue-100 to-blue-200 px-4 py-2 text-2xl font-bold text-gray-800 shadow-sm md:text-3xl"
+	>
 		{chapter?.expand?.course[0].title}
 	</h2>
+	<!-- Progress Bar -->
+	<div class="mt-4">
+		<div class="relative h-8 w-full rounded-full bg-gray-200">
+			<div
+				class={`absolute left-0 top-0 h-full rounded transition-all duration-300 ease-in-out ${getProgressColor(
+					progress
+				)}`}
+				style={`width: ${progress}%`}
+			></div>
 
-	<div class="mt-8 flex flex-col gap-8 lg:flex-row">
-		<div class="w-full lg:w-2/3">
+			<div
+				class="absolute inset-0 flex items-center justify-center text-sm font-medium text-white"
+				style="z-index: 10"
+			>
+				{progress}%
+			</div>
+		</div>
+	</div>
+	<div class="mt-2 flex flex-col gap-8 lg:flex-row">
+		<!-- Left Column -->
+		<div class="w-full rounded-lg bg-white p-2 shadow-md lg:w-2/3">
 			<div class="overflow-hidden rounded-xl bg-gray-900 shadow-lg">
 				<div class="relative aspect-video">
 					<video
@@ -90,20 +111,6 @@
 						<track kind="captions" label="English" srclang="en" default />
 						Your browser does not support the video tag.
 					</video>
-				</div>
-			</div>
-
-			<!-- Progress Bar (Dynamic and colorful) -->
-			<div class="mt-4">
-				<div class="flex items-center justify-between">
-					<span class="text-sm font-medium text-gray-600">Progress</span>
-					<span class="text-sm font-medium text-blue-600">{progress}%</span>
-				</div>
-				<div class="mt-1 h-1.5 w-full rounded-full bg-gray-200">
-					<div
-						class={`h-1.5 rounded-full transition-all duration-300 ease-in-out ${getProgressColor(progress)}`}
-						style={`width: ${progress}%`}
-					></div>
 				</div>
 			</div>
 
@@ -125,9 +132,88 @@
 					{/each}
 				{/if}
 			</div>
+			<div class="mt-8">
+				<!-- Comment Form -->
+				<div class="mt-4 flex items-center space-x-4">
+					<img
+						src="https://via.placeholder.com/40"
+						alt="User Avatar"
+						class="h-10 w-10 rounded-full"
+					/>
+					<textarea
+						class="w-full rounded-md border border-gray-300 p-3 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+						placeholder="Add a comment..."
+						rows="4"
+					></textarea>
+				</div>
+				<button class="mt-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+					>Submit</button
+				>
+
+				<!-- Display Comments -->
+				<div class="mt-6 space-y-4">
+					<div class="flex space-x-4 rounded-lg bg-gray-100 p-4 shadow">
+						<img
+							src="https://via.placeholder.com/40"
+							alt="User Avatar"
+							class="h-10 w-10 rounded-full"
+						/>
+						<div class="flex-1">
+							<div class="flex justify-between">
+								<p class="text-sm font-medium text-gray-700">comment.username</p>
+								<p class="text-xs text-gray-500">1 hour ago</p>
+							</div>
+							<p class="mt-1 text-gray-600">comment.text</p>
+							<div class="mt-2 flex space-x-4 text-sm text-gray-500">
+								<button class="hover:text-blue-500">Like</button>
+								<button class="hover:text-blue-500">Reply</button>
+							</div>
+						</div>
+					</div>
+
+					<div class="flex space-x-4 rounded-lg bg-gray-100 p-4 shadow">
+						<img
+							src="https://via.placeholder.com/40"
+							alt="User Avatar"
+							class="h-10 w-10 rounded-full"
+						/>
+						<div class="flex-1">
+							<div class="flex justify-between">
+								<p class="text-sm font-medium text-gray-700">comment.username</p>
+								<p class="text-xs text-gray-500">2 hours ago</p>
+							</div>
+							<p class="mt-1 text-gray-600">comment.text</p>
+							<div class="mt-2 flex space-x-4 text-sm text-gray-500">
+								<button class="hover:text-blue-500">Like</button>
+								<button class="hover:text-blue-500">Reply</button>
+							</div>
+						</div>
+					</div>
+
+					<div class="flex space-x-4 rounded-lg bg-gray-100 p-4 shadow">
+						<img
+							src="https://via.placeholder.com/40"
+							alt="User Avatar"
+							class="h-10 w-10 rounded-full"
+						/>
+						<div class="flex-1">
+							<div class="flex justify-between">
+								<p class="text-sm font-medium text-gray-700">comment.username</p>
+								<p class="text-xs text-gray-500">3 hours ago</p>
+							</div>
+							<p class="mt-1 text-gray-600">comment.text</p>
+							<div class="mt-2 flex space-x-4 text-sm text-gray-500">
+								<button class="hover:text-blue-500">Like</button>
+								<button class="hover:text-blue-500">Reply</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 
-		<div class="w-full lg:w-1/3">
+		<!-- Right Column -->
+		<div class="w-full rounded-lg bg-gray-50 p-2 shadow-md lg:w-1/3">
 			<h3 class="mb-4 text-xl font-semibold text-gray-800">Next up</h3>
 			<div class="space-y-4">
 				{#each otherChapters as item}
@@ -136,9 +222,9 @@
 						class="group block overflow-hidden rounded-lg bg-white shadow-md transition-all duration-300 hover:shadow-lg {item.id ===
 						chapter?.id
 							? 'ring-2 ring-blue-500'
-							: ''}"
+							: ''} p-3"
 					>
-						<div class="flex space-x-2 p-1">
+						<div class="flex space-x-2">
 							<div class="relative flex-shrink-0">
 								{#if item.thumbnailUrl}
 									<img
