@@ -31,6 +31,7 @@ export type Chapter = RecordModel & {
 	isPublished: boolean;
 	isFree: boolean;
 	course: string;
+	view?: number;
 	expand?: {
 		'attachments(chapter)'?: Attachment[];
 	};

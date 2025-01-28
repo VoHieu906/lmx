@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { formatDuration } from '$lib/utils';
-	import { Play, Pause, Files } from 'lucide-svelte';
+	import { formatTime } from '$lib/utils';
+	import { Files, Eye, CalendarClock } from 'lucide-svelte';
 	import { page } from '$app/stores';
 	import { get } from 'svelte/store';
 	import type { Chapter, Comment, Course } from '$lib/type.js';
@@ -8,6 +8,8 @@
 	import ChapterCommentForm from '$lib/components/ChapterCommentForm.svelte';
 	import { getRandomColor } from '$lib/actions/getRandomColor.js';
 	import { onMount } from 'svelte';
+	import ChapterVideoCard from '$lib/components/chapterVideoCard.svelte';
+	import { getProgressColor } from '$lib/actions/getProgressColor.js';
 
 	export let data;
 
@@ -35,15 +37,6 @@
 	});
 	let progress = data.subscription?.progress ?? 0;
 	let completedChapters = data.subscription?.completedChapters ?? [];
-
-	// Function to determine progress bar color based on progress
-	function getProgressColor(progress: number): string {
-		if (progress >= 100) return 'bg-blue-600'; // Completed
-		if (progress >= 75) return 'bg-green-500'; // Near completion
-		if (progress >= 50) return 'bg-yellow-400'; // Good progress
-		if (progress >= 25) return 'bg-orange-400'; // Moderate progress
-		return 'bg-red-500'; // Low progress
-	}
 
 	async function markChapterAsCompleted(chapterId: string) {
 		if (progress >= 100 || completedChapters.includes(chapterId)) return;
@@ -76,6 +69,36 @@
 	function handleVideoEnd() {
 		if (data.chapter?.id && progress < 100) {
 			markChapterAsCompleted(data.chapter.id);
+		}
+	}
+
+	let videoElement: HTMLVideoElement;
+	let hasCountedView = false;
+	function handleTimeUpdate() {
+		if (!videoElement || hasCountedView) return;
+		const currentTime = videoElement.currentTime;
+		const duration = videoElement.duration;
+		if (duration > 0) {
+			const percentWatched = (currentTime / duration) * 100;
+			if (percentWatched > 65) {
+				hasCountedView = true;
+				updateChapterViewCount(chapter?.id);
+			}
+		}
+	}
+	async function updateChapterViewCount(chapterId: string | undefined) {
+		if (!chapterId) return;
+		try {
+			const res = await fetch('/api/view-count', {
+				method: 'PATCH',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ chapterId })
+			});
+			if (!res.ok) {
+				throw new Error('Fail to update view count');
+			}
+		} catch (e) {
+			console.log('Error updating view count ');
 		}
 	}
 </script>
@@ -111,12 +134,14 @@
 			<div class="overflow-hidden rounded-xl bg-gray-900 shadow-lg">
 				<div class="relative aspect-video">
 					<video
+						bind:this={videoElement}
 						title={chapter?.title}
 						src={chapter?.videoUrl}
 						controls
 						crossorigin="anonymous"
-						class="absolute inset-0 h-full w-full"
+						class="absolute inset-0 size-full"
 						on:ended={handleVideoEnd}
+						on:timeupdate={handleTimeUpdate}
 					>
 						<track kind="captions" label="English" srclang="en" default />
 						Your browser does not support the video tag.
@@ -125,7 +150,20 @@
 			</div>
 
 			<div class="mt-4 space-y-4">
-				<h2 class="text-xl font-bold text-gray-800 md:text-2xl">{chapter?.title}</h2>
+				<div class="flex justify-between">
+					<h2 class="text-xl font-bold text-gray-800 md:text-2xl">{chapter?.title}</h2>
+					<div class="flex justify-between gap-2">
+						<div class="flex gap-1">
+							<Eye />
+							{chapter?.views}
+						</div>
+						<div class="flex gap-1">
+							<CalendarClock />
+							{formatTime(chapter?.created)}
+						</div>
+					</div>
+				</div>
+
 				<p class="text-base text-gray-600 md:text-lg">{chapter?.description}</p>
 			</div>
 
@@ -194,61 +232,7 @@
 			<h3 class="mb-4 text-xl font-semibold text-gray-800">Next up</h3>
 			<div class="space-y-4">
 				{#each otherChapters as item}
-					<a
-						href={`/courses/${course?.id}/${item.id}`}
-						class="group block overflow-hidden rounded-lg bg-white shadow-md transition-all duration-300 hover:shadow-lg {item.id ===
-						chapter?.id
-							? 'ring-2 ring-blue-500'
-							: ''} p-1"
-					>
-						<div class="flex space-x-2">
-							<div class="relative flex-shrink-0">
-								{#if item.thumbnailUrl}
-									<img
-										src={item.thumbnailUrl}
-										alt={item.title}
-										class="h-[101px] w-[180px] rounded-md object-cover transition-all duration-300"
-									/>
-								{:else}
-									<div class="h-[101px] w-[180px] animate-pulse rounded-md bg-gray-200"></div>
-								{/if}
-
-								<div
-									class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 transition-all duration-300 group-hover:bg-opacity-50"
-								>
-									{#if item.id === chapter?.id}
-										<Pause class="h-12 w-12 rounded-full bg-blue-500 p-2 text-white" />
-									{:else}
-										<Play
-											class="h-12 w-12 text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-										/>
-									{/if}
-								</div>
-
-								{#if item.duration}
-									<div
-										class="absolute bottom-1 right-1 rounded bg-black bg-opacity-80 px-1.5 py-0.5 text-xs text-white"
-									>
-										{formatDuration(item.duration)}
-									</div>
-								{/if}
-							</div>
-
-							<div class="flex flex-col justify-between p-2">
-								<div>
-									<h4
-										class="line-clamp-2 text-sm font-semibold text-gray-800 group-hover:text-blue-600"
-									>
-										{item.title}
-									</h4>
-									<p class="mt-1 line-clamp-2 text-xs text-gray-500">{item.description}</p>
-								</div>
-								{#if item.id === chapter?.id}
-									<span class="text-xs font-medium text-blue-500">Now Playing</span>
-								{/if}
-							</div>
-						</div>
-					</a>
+					<ChapterVideoCard {item} courseId={course?.id} currentChapterId={chapter?.id} />
 				{/each}
 			</div>
 		</div>

@@ -57,6 +57,7 @@ export const load = async ({ params, locals: { user, pb } }) => {
 				const videoUrl = pb.files.getURL(chapter, chapter.videoUrl);
 				chapter.videoUrl = videoUrl;
 			}
+
 			return chapter;
 		} catch (e) {
 			console.log('error:', e);
@@ -74,6 +75,7 @@ export const load = async ({ params, locals: { user, pb } }) => {
 			console.log('error:', e);
 		}
 	}
+
 	const [chapter, course, subscription, comment] = await Promise.all([
 		getChapter(),
 		getCourse(),
