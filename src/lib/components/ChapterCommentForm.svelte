@@ -16,18 +16,24 @@
 	const { form: formData, delayed } = form;
 	let submitting = false;
 	let fileInput: HTMLInputElement | null = null;
+	let uploadedFile: File | null = null;
+
 	async function handleSubmit(event: Event) {
 		event.preventDefault();
 		submitting = true;
 
-		//simulate the form submission logic
 		const formElement = event.target as HTMLFormElement;
 		const formData = new FormData(formElement);
+		if (uploadedFile) {
+			formData.append('file', uploadedFile);
+		}
+
 		try {
 			const response = await fetch(formElement.action, { method: 'POST', body: formData });
 			if (response.ok) {
 				form.reset();
 				if (fileInput) fileInput.value = '';
+				uploadedFile = null;
 				toast.success('Submitted successfully!');
 			} else {
 				const errorData = await response.json();
@@ -35,10 +41,22 @@
 			}
 		} catch (e) {
 			console.log('Error submitting the form', error);
-			toast.error('An expected error occurred');
+			toast.error('An unexpected error occurred');
 		} finally {
 			submitting = false;
 		}
+	}
+
+	function handleFileChange(event: Event) {
+		const target = event.target as HTMLInputElement;
+		if (target.files && target.files[0]) {
+			uploadedFile = target.files[0];
+		}
+	}
+
+	function removeFile() {
+		uploadedFile = null;
+		if (fileInput) fileInput.value = '';
 	}
 </script>
 
@@ -64,26 +82,42 @@
 				<Form.FieldErrors />
 				<div class="flex items-center justify-end space-x-4">
 					<!-- File upload button -->
-					<input
-						type="file"
-						accept="image/*, .pdf, .doc, .docx"
-						class="file-input hidden"
-						id="fileInput"
-						name="file"
-						bind:this={fileInput}
-					/>
-					<label
-						for="fileInput"
-						class="mt-2 cursor-pointer rounded-lg bg-gray-500 px-4 py-2 text-white hover:bg-gray-600"
-					>
-						Add file
-					</label>
+					{#if uploadedFile}
+						<div
+							class="flex items-center space-x-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2"
+						>
+							<span class="text-sm text-gray-700">{uploadedFile.name}</span>
+							<button
+								type="button"
+								on:click={removeFile}
+								class="text-red-500 hover:text-red-700 focus:outline-none"
+							>
+								X
+							</button>
+						</div>
+					{:else}
+						<input
+							type="file"
+							accept="image/*, .pdf, .doc, .docx"
+							class="file-input hidden"
+							id="fileInput"
+							name="file"
+							bind:this={fileInput}
+							on:change={handleFileChange}
+						/>
+						<label
+							for="fileInput"
+							class="mt-2 cursor-pointer rounded-lg bg-gray-500 px-4 py-2 text-white hover:bg-gray-600"
+						>
+							Add file
+						</label>
+					{/if}
 
 					<!-- Submit button -->
 					<button
 						type="submit"
-						class="mt-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-						disabled={submitting}
+						class="mt-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500"
+						disabled={submitting || !$formData.comment}
 					>
 						{submitting ? 'Submitting...' : 'Submit'}
 					</button>

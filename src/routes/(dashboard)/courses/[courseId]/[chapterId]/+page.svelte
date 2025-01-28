@@ -3,26 +3,36 @@
 	import { Play, Pause, Files } from 'lucide-svelte';
 	import { page } from '$app/stores';
 	import { get } from 'svelte/store';
-	import type { Chapter, Course } from '$lib/type.js';
+	import type { Chapter, Comment, Course } from '$lib/type.js';
 	import { toast } from 'svelte-sonner';
 	import ChapterCommentForm from '$lib/components/ChapterCommentForm.svelte';
+	import { getRandomColor } from '$lib/actions/getRandomColor.js';
+	import { onMount } from 'svelte';
 
 	export let data;
 
 	let chapter: Chapter | undefined;
 	let course: Course | undefined;
 	let otherChapters: Chapter[] = [];
-
+	let comments: Comment[] | undefined = [];
+	let userAvatarColor: string;
 	// Reactive block to handle page params
 	$: {
 		const { courseId, chapterId } = get(page).params;
 		if (courseId && chapterId) {
 			chapter = data.chapter;
 			course = data.course;
+			comments = data.comment;
 			otherChapters = course?.expand?.['chapters(course)'] || [];
 		}
 	}
-
+	onMount(() => {
+		const storedColor = localStorage.getItem('userAvatarColor');
+		userAvatarColor = storedColor || getRandomColor();
+		if (!storedColor) {
+			localStorage.setItem('userAvatarColor', userAvatarColor);
+		}
+	});
 	let progress = data.subscription?.progress ?? 0;
 	let completedChapters = data.subscription?.completedChapters ?? [];
 
@@ -68,7 +78,6 @@
 			markChapterAsCompleted(data.chapter.id);
 		}
 	}
-	console.log(data.comment);
 </script>
 
 <div class="container mx-auto px-4 py-2">
@@ -80,9 +89,9 @@
 	</h2>
 	<!-- Progress Bar -->
 	<div class="mt-4">
-		<div class="relative h-8 w-full rounded-full bg-gray-200">
+		<div class="relative h-4 w-full rounded-full bg-gray-200">
 			<div
-				class={`absolute left-0 top-0 h-full rounded transition-all duration-300 ease-in-out ${getProgressColor(
+				class={`absolute left-0 top-0 h-full rounded-full transition-all duration-300 ease-in-out ${getProgressColor(
 					progress
 				)}`}
 				style={`width: ${progress}%`}
@@ -139,20 +148,43 @@
 
 				<!-- Display Comments -->
 				<div class="mt-6 space-y-4">
-					<div class="flex space-x-4 p-4">
-						<img src="" alt="User Avatar" class="h-10 w-10 rounded-full" />
-						<div class="flex-1">
-							<div class="flex justify-between">
-								<p class="text-sm font-medium text-gray-700">comment.username</p>
-								<p class="text-xs text-gray-500">1 hour ago</p>
-							</div>
-							<p class="mt-1 text-gray-600">comment.text</p>
-							<div class="mt-2 flex space-x-4 text-sm text-gray-500">
-								<button class="hover:text-blue-500">Like</button>
-								<button class="hover:text-blue-500">Reply</button>
+					{#each comments || [] as cmt}
+						<div class="flex space-x-4 p-4">
+							{#if cmt?.expand?.user?.avatar}
+								<img
+									src={cmt?.expand?.user?.avatar}
+									alt="User Avatar"
+									class="h-10 w-10 rounded-full"
+								/>
+							{:else}
+								<div
+									class={`flex h-10 w-10 items-center justify-center rounded-full font-medium text-white ${userAvatarColor}`}
+								>
+									{cmt?.expand?.user?.username ? cmt?.expand?.user?.username[0].toUpperCase() : '?'}
+								</div>
+							{/if}
+
+							<div class="flex-1">
+								<div class="flex justify-between">
+									<p class="text-sm font-medium text-gray-700">{cmt?.expand?.user?.username}</p>
+									<p class="text-xs text-gray-500">1 hour ago</p>
+								</div>
+								<p class="mt-1 text-gray-600">{cmt.content}</p>
+								{#if cmt.file}
+									<div
+										class=" flex w-[20%] items-center rounded border border-sky-200 bg-sky-100 p-2"
+									>
+										<Files class="m-1 size-4 flex-shrink-0" />
+										<p class="line-clamp-1 text-xs">{cmt.file}</p>
+									</div>
+								{/if}
+								<div class="mt-2 flex space-x-4 text-sm text-gray-500">
+									<button class="hover:text-blue-500">Like</button>
+									<button class="hover:text-blue-500">Reply</button>
+								</div>
 							</div>
 						</div>
-					</div>
+					{/each}
 				</div>
 			</div>
 		</div>
@@ -167,7 +199,7 @@
 						class="group block overflow-hidden rounded-lg bg-white shadow-md transition-all duration-300 hover:shadow-lg {item.id ===
 						chapter?.id
 							? 'ring-2 ring-blue-500'
-							: ''} p-3"
+							: ''} p-1"
 					>
 						<div class="flex space-x-2">
 							<div class="relative flex-shrink-0">

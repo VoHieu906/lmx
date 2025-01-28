@@ -64,9 +64,11 @@ export const load = async ({ params, locals: { user, pb } }) => {
 	}
 	async function getComment() {
 		try {
-			const comment = await pb
-				.collection('comments')
-				.getFirstListItem<Comment>(`chapter = "${chapterId}"`);
+			const comment = await pb.collection('comments').getFullList<Comment>({
+				filter: `chapter = "${chapterId}"`,
+				sort: '-created',
+				expand: 'user'
+			});
 			return comment;
 		} catch (e) {
 			console.log('error:', e);
