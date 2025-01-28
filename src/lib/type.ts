@@ -7,7 +7,6 @@ export type Course = RecordModel &
 		expand?: {
 			category: Category;
 			user: AuthModel;
-
 			'chapters(course)'?: Chapter[];
 			'purchase(course)'?: Purchase[];
 		};

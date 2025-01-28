@@ -36,22 +36,15 @@
 			</Form.Control>
 			<Form.FieldErrors />
 		</Form.Field>
-		<div class="grid grid-cols-2 gap-5">
-			<Form.Field {form} name="firstName">
-				<Form.Control let:attrs>
-					<Form.Label>First Name</Form.Label>
-					<Input {...attrs} bind:value={$formData.firstName} />
-				</Form.Control>
-				<Form.FieldErrors />
-			</Form.Field>
-			<Form.Field {form} name="lastName">
-				<Form.Control let:attrs>
-					<Form.Label>Last Name</Form.Label>
-					<Input {...attrs} bind:value={$formData.lastName} />
-				</Form.Control>
-				<Form.FieldErrors />
-			</Form.Field>
-		</div>
+
+		<Form.Field {form} name="username">
+			<Form.Control let:attrs>
+				<Form.Label>Username</Form.Label>
+				<Input {...attrs} bind:value={$formData.username} />
+			</Form.Control>
+			<Form.FieldErrors />
+		</Form.Field>
+
 		<Form.Button class="w-full">
 			{#if $delayed}
 				<Loader2 class="size-6 animate-spin" />

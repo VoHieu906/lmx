@@ -3,6 +3,21 @@
 	import { Book, Clock, GitPullRequest, Users } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 
+	export let data;
+	let { course } = data;
+	console.log(course);
+	let totalViews = course?.reduce((courseAcc, course) => {
+		let chapterViews =
+			course.expand?.['chapters(course)']?.reduce(
+				(chapterAcc, chapter) => chapterAcc + chapter.views,
+				0
+			) || 0;
+		return courseAcc + chapterViews;
+	}, 0);
+	let totalSubscribers = course?.reduce((subAcc, sub) => {
+		return subAcc + (sub?.subscribers ? sub?.subscribers : 0);
+	}, 0);
+	let totalCourses = course?.length;
 	let lineChart, pieChart;
 	let selectedCourse = 'JavaScript'; // Default selected course
 
@@ -107,7 +122,7 @@
 		<div class="flex items-center space-x-4 rounded-lg bg-green-100 p-2 shadow-lg">
 			<Book class="size-6 text-green-600" />
 			<div>
-				<p class="text-2xl font-bold">5000</p>
+				<p class="text-2xl font-bold">{totalViews}</p>
 				<h3 class="text-xl">Total Views</h3>
 			</div>
 		</div>
@@ -115,14 +130,14 @@
 		<div class="flex items-center space-x-4 rounded-lg bg-blue-100 p-2 shadow-lg">
 			<Users class="size-6 text-blue-600" />
 			<div>
-				<p class="text-2xl font-bold">1,500</p>
-				<h3 class="text-xl">Number of Students</h3>
+				<p class="text-2xl font-bold">{totalSubscribers}</p>
+				<h3 class="text-xl">Total Subscribers</h3>
 			</div>
 		</div>
 		<div class="flex items-center space-x-4 rounded-lg bg-red-100 p-2 shadow-lg">
 			<GitPullRequest class="size-6 text-red-600" />
 			<div>
-				<p class="text-2xl font-bold">5</p>
+				<p class="text-2xl font-bold">{totalCourses}</p>
 				<h3 class="text-xl">Total Course</h3>
 			</div>
 		</div>

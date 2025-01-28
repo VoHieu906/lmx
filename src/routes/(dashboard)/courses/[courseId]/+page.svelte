@@ -9,7 +9,8 @@
 		Calendar,
 		Tag,
 		PlayCircle,
-		Check
+		Check,
+		X
 	} from 'lucide-svelte';
 
 	const courseDemo = {
@@ -21,9 +22,7 @@
 		},
 		level: 'Intermediate',
 		lastUpdated: '2023-05-15',
-		image: '',
-		tags: ['SvelteKit', 'JavaScript', 'Web Development', 'SSR', 'API Routes'],
-		slug: 'advanced-sveltekit-development'
+		image: ''
 	};
 	import { page } from '$app/stores';
 	import { formatDurationWithUnits } from '$lib/utils.js';
@@ -65,6 +64,42 @@
 		} catch (e) {
 			toast.error('Error subscribing to course');
 		}
+	}
+	async function unSubscribe() {
+		try {
+			const res = await fetch('/api/unSubscribe', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ userId, courseId })
+			});
+
+			const responseData = await res.json();
+
+			if (res.ok) {
+				if (responseData.message === 'User is not subscribed to this course') {
+					toast.info(responseData.message); // Display as an info toast
+				} else {
+					toast.success('Unsubscription successful'); // Display as a success toast
+					isSubscribed = false; // Update the state to reflect the unsubscription
+				}
+			} else {
+				toast.error(responseData.error || 'Failed to unsubscribe'); // Display as an error toast
+			}
+		} catch (e) {
+			toast.error('Error unsubscribing from course');
+		}
+	}
+	let rating: number = 0; // Store the rating selected by the user
+	let userRating: number | null = null; // Store the user's rating, initially null (not rated)
+
+	// Function to handle star click
+	function handleRating(selectedRating: number): void {
+		userRating = selectedRating; // Update the user's rating
+		rating = selectedRating; // Update the rating shown in the stars
+		console.log(rating);
+		console.log(userRating);
+		// Optionally, you can send the rating to the backend immediately
+		toast.success('Thank you for your rating!'); // Confirmation toast
 	}
 </script>
 
@@ -125,62 +160,100 @@
 				</div>
 			</div>
 
-			<div class="flex justify-center space-x-4">
+			<div class="flex flex-col justify-center space-x-2 sm:flex-row sm:space-x-4">
 				{#if isSubscribed}
 					{#if progress}
-						<div class="relative flex h-16 w-16 items-center justify-center">
-							<svg class="absolute inset-0 h-full w-full" viewBox="0 0 36 36">
-								<!-- Background Circle -->
-								<circle
-									stroke="currentColor"
-									stroke-width="3"
-									fill="transparent"
-									r="15.915"
-									cx="18"
-									cy="18"
-									class="text-gray-300"
-								></circle>
+						<div class="flex flex-col items-center gap-4">
+							<div class="relative flex h-16 w-16 items-center justify-center">
+								<svg class="absolute inset-0 h-full w-full" viewBox="0 0 36 36">
+									<!-- Background Circle -->
+									<circle
+										stroke="currentColor"
+										stroke-width="3"
+										fill="transparent"
+										r="15.915"
+										cx="18"
+										cy="18"
+										class="text-gray-300"
+									></circle>
 
-								<!-- Progress Circle -->
-								<circle
-									stroke-width="3"
-									fill="transparent"
-									r="15.915"
-									cx="18"
-									cy="18"
-									style="stroke-dasharray: 100, 100; stroke-dashoffset: {100 - progress};"
-									class={`transition-all duration-300 ${
-										progress >= 100
-											? 'stroke-blue-600'
-											: progress >= 75
-												? 'stroke-green-500'
-												: progress >= 50
-													? 'stroke-yellow-400'
-													: progress >= 25
-														? 'stroke-orange-400'
-														: 'stroke-red-500'
-									}`}
-								></circle>
-							</svg>
-							<span class="absolute text-sm font-bold">{progress}%</span>
+									<!-- Progress Circle -->
+									<circle
+										stroke-width="3"
+										fill="transparent"
+										r="15.915"
+										cx="18"
+										cy="18"
+										style="stroke-dasharray: 100, 100; stroke-dashoffset: {100 - progress};"
+										class={`transition-all duration-300 ${
+											progress >= 100
+												? 'stroke-blue-600'
+												: progress >= 75
+													? 'stroke-green-500'
+													: progress >= 50
+														? 'stroke-yellow-400'
+														: progress >= 25
+															? 'stroke-orange-400'
+															: 'stroke-red-500'
+										}`}
+									></circle>
+								</svg>
+								<span class="absolute text-sm font-bold">{progress}%</span>
+							</div>
+
+							{#if progress === 100}
+								<div class="flex flex-col items-center">
+									<div class="flex items-center space-x-1">
+										{#each [1, 2, 3, 4, 5] as star}
+											<Star
+												on:click={() => handleRating(star)}
+												class="cursor-pointer text-yellow-500"
+												size={24}
+												fill={userRating !== null && userRating >= star ? 'yellow' : 'none'}
+											/>
+										{/each}
+									</div>
+
+									<p class="mt-2 text-sm text-gray-500">
+										{#if userRating !== null}
+											You rated this course {userRating} out of 5 stars.
+										{:else}
+											Click on a star to rate this course!
+										{/if}
+									</p>
+								</div>
+							{/if}
 						</div>
 					{/if}
 
-					<a
-						href={`${$page.url.pathname}/${course.expand?.['chapters(course)']?.[0].id}`}
-						class="flex items-center rounded-md bg-green-600 px-6 py-3 font-semibold text-white transition duration-300 hover:bg-green-700"
-					>
-						<PlayCircle class="mr-2 h-5 w-5" />
-						Start CourseDemo
-					</a>
+					<div class="mt-4 sm:mt-0">
+						<a
+							href={`${$page.url.pathname}/${course.expand?.['chapters(course)']?.[0].id}`}
+							class="flex items-center rounded-md bg-green-600 px-4 py-2 font-semibold text-white transition duration-300 hover:bg-green-700"
+						>
+							<PlayCircle class="mr-2 h-5 w-5" />
+							Start CourseDemo
+						</a>
+					</div>
+					<div class="mt-4 sm:mt-0">
+						<button
+							on:click={unSubscribe}
+							class="flex items-center rounded-md bg-red-600 px-4 py-2 font-semibold text-white transition duration-300 hover:bg-red-700"
+						>
+							<X class="mr-2 h-5 w-5" />
+							Unsubscribe
+						</button>
+					</div>
 				{:else}
-					<button
-						on:click={subscribe}
-						class="flex items-center rounded-md bg-indigo-600 px-6 py-3 font-semibold text-white transition duration-300 hover:bg-indigo-700"
-					>
-						<GraduationCap class="mr-2 h-5 w-5" />
-						Enroll in CourseDemo
-					</button>
+					<div class="mt-4 sm:mt-0">
+						<button
+							on:click={subscribe}
+							class="flex items-center rounded-md bg-indigo-600 px-4 py-2 font-semibold text-white transition duration-300 hover:bg-indigo-700"
+						>
+							<GraduationCap class="mr-2 h-5 w-5" />
+							Enroll in CourseDemo
+						</button>
+					</div>
 				{/if}
 			</div>
 		</div>

@@ -6,8 +6,7 @@ export const loginSchema = z.object({
 });
 export const registerSchema = z
 	.object({
-		firstName: z.string().min(3),
-		lastName: z.string().min(3),
+		username: z.string().min(3),
 		email: z.string().email(),
 		password: z.string().min(8),
 		passwordConfirm: z.string()
@@ -23,7 +22,8 @@ export const courseSchema = z.object({
 	imgUrl: z.string().optional(),
 	price: z.number({ coerce: true }).optional(),
 	isPublished: z.boolean(),
-	category: z.string().optional()
+	category: z.string().optional(),
+	subscribers: z.number().optional()
 });
 
 export const titleSchema = courseSchema.pick({ title: true });
