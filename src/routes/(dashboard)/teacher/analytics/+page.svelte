@@ -3,11 +3,32 @@
 	import { Book, Clock, GitPullRequest, Users } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 
-	let lineChart, barChart, pieChart;
+	let lineChart, pieChart;
+	let selectedCourse = 'JavaScript'; // Default selected course
+
+	const courseData = {
+		JavaScript: [120, 132, 101, 134, 90, 230, 210, 180, 250, 300, 280, 310],
+		Python: [220, 182, 191, 234, 290, 330, 310, 280, 290, 310, 400, 390],
+		React: [150, 232, 201, 154, 190, 330, 410, 400, 380, 390, 450, 460],
+		Backend: [98, 77, 101, 99, 40, 80, 60, 70, 90, 120, 110, 130]
+	};
+
+	const updateLineChart = () => {
+		if (lineChart) {
+			lineChart.setOption({
+				series: [
+					{
+						name: selectedCourse,
+						type: 'line',
+						data: courseData[selectedCourse]
+					}
+				]
+			});
+		}
+	};
 
 	onMount(() => {
 		if (typeof window !== 'undefined') {
-			// Line chart
 			const lineChartDom = document.getElementById('lineChart');
 			lineChart = echarts.init(lineChartDom);
 			lineChart.setOption({
@@ -19,7 +40,7 @@
 					trigger: 'axis'
 				},
 				legend: {
-					data: ['JavaScript', 'Python', 'React', 'Backend'],
+					data: [selectedCourse],
 					bottom: 0
 				},
 				xAxis: {
@@ -32,51 +53,9 @@
 				},
 				series: [
 					{
-						name: 'JavaScript',
+						name: selectedCourse,
 						type: 'line',
-						data: [120, 132, 101, 134, 90, 230, 210, 180, 250, 300, 280, 310]
-					},
-					{
-						name: 'Python',
-						type: 'line',
-						data: [220, 182, 191, 234, 290, 330, 310, 280, 290, 310, 400, 390]
-					},
-					{
-						name: 'React',
-						type: 'line',
-						data: [150, 232, 201, 154, 190, 330, 410, 400, 380, 390, 450, 460]
-					},
-					{
-						name: 'Backend',
-						type: 'line',
-						data: [98, 77, 101, 99, 40, 80, 60, 70, 90, 120, 110, 130]
-					}
-				]
-			});
-
-			// Bar chart
-			const barChartDom = document.getElementById('barChart');
-			barChart = echarts.init(barChartDom);
-			barChart.setOption({
-				title: {
-					text: 'Course Enrollment Comparison',
-					left: 'center'
-				},
-				tooltip: {
-					trigger: 'axis'
-				},
-				xAxis: {
-					type: 'category',
-					data: ['JavaScript', 'Python', 'React', 'Backend']
-				},
-				yAxis: {
-					type: 'value'
-				},
-				series: [
-					{
-						name: 'Enrollments',
-						type: 'bar',
-						data: [1050, 1200, 1500, 900]
+						data: courseData[selectedCourse]
 					}
 				]
 			});
@@ -110,7 +89,6 @@
 			// Resize charts if window size changes
 			const resizeCharts = () => {
 				lineChart.resize();
-				barChart.resize();
 				pieChart.resize();
 			};
 
@@ -125,42 +103,58 @@
 
 <div class="container mx-auto px-4 py-8">
 	<!-- Info Boxes above the charts -->
-	<div class="mb-40 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-		<div class="flex items-center space-x-4 rounded-lg bg-green-100 p-4 shadow-lg">
+	<div class="mb-40 grid grid-cols-1 gap-8 px-6 sm:grid-cols-2 lg:grid-cols-4">
+		<div class="flex items-center space-x-4 rounded-lg bg-green-100 p-2 shadow-lg">
 			<Book class="size-6 text-green-600" />
 			<div>
 				<p class="text-2xl font-bold">5000</p>
-				<h3 class="text-xl">ToTal Views</h3>
+				<h3 class="text-xl">Total Views</h3>
 			</div>
 		</div>
-		<div class="flex items-center space-x-4 rounded-lg bg-red-100 p-4 shadow-lg">
-			<GitPullRequest class="size-6 text-red-600" />
-			<div>
-				<p class="text-2xl font-bold">75</p>
-				<h3 class="text-xl">Total Chapters</h3>
-			</div>
-		</div>
-		<div class="flex items-center space-x-4 rounded-lg bg-blue-100 p-4 shadow-lg">
+
+		<div class="flex items-center space-x-4 rounded-lg bg-blue-100 p-2 shadow-lg">
 			<Users class="size-6 text-blue-600" />
 			<div>
 				<p class="text-2xl font-bold">1,500</p>
 				<h3 class="text-xl">Number of Students</h3>
 			</div>
 		</div>
-		<div class="flex items-center space-x-4 rounded-lg bg-yellow-100 p-4 shadow-lg">
+		<div class="flex items-center space-x-4 rounded-lg bg-red-100 p-2 shadow-lg">
+			<GitPullRequest class="size-6 text-red-600" />
+			<div>
+				<p class="text-2xl font-bold">5</p>
+				<h3 class="text-xl">Total Course</h3>
+			</div>
+		</div>
+		<div class="flex items-center space-x-4 rounded-lg bg-yellow-100 p-2 shadow-lg">
 			<Clock class="size-6 text-yellow-600" />
 			<div>
-				<p class="text-2xl font-bold">12,000</p>
-				<h3 class="text-xl">Total Study Hours</h3>
+				<p class="text-2xl font-bold">4.9</p>
+				<h3 class="text-xl">Average rating</h3>
 			</div>
 		</div>
 	</div>
 
 	<!-- Charts Grid -->
 	<div class="grid grid-cols-1 gap-8 md:grid-cols-2">
-		<div id="barChart" class="h-[400px] w-full"></div>
+		<div class="relative">
+			<!-- Dropdown in the top-left corner of the line chart -->
+			<div class="absolute left-8 top-0 z-10">
+				<select
+					id="courseSelect"
+					class="rounded-md border-2 border-indigo-500 bg-white px-2 py-1 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+					bind:value={selectedCourse}
+					on:change={updateLineChart}
+				>
+					<option value="JavaScript">JavaScript</option>
+					<option value="Python">Python</option>
+					<option value="React">React</option>
+					<option value="Backend">Backend</option>
+				</select>
+			</div>
+			<div id="lineChart" class="h-[400px] w-full"></div>
+		</div>
 		<div id="pieChart" class="h-[400px] w-full"></div>
-		<div id="lineChart" class="h-[400px] w-full md:col-span-2"></div>
 	</div>
 </div>
 
