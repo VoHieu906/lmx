@@ -1,5 +1,5 @@
-import type { Course, Subscription } from '$lib/type';
-import { redirect } from '@sveltejs/kit';
+import type { Course, Rating, Subscription } from '$lib/type';
+import { error, redirect } from '@sveltejs/kit';
 
 export const load = async ({ params, locals: { user, pb } }) => {
 	const { courseId } = params;
@@ -10,7 +10,7 @@ export const load = async ({ params, locals: { user, pb } }) => {
 	async function getCourse() {
 		try {
 			const course = await pb.collection('courses').getOne<Course>(courseId, {
-				expand: 'chapters(course),user,subscriptions(course)'
+				expand: 'chapters(course),user,subscriptions(course), ratings(course)'
 			});
 			if (course.imageUrl) {
 				const imageUrl = pb.files.getURL(course, course.imageUrl);
@@ -21,6 +21,7 @@ export const load = async ({ params, locals: { user, pb } }) => {
 			redirect(303, '/');
 		}
 	}
+
 	async function getSubscription() {
 		try {
 			const subscription = await pb
@@ -31,8 +32,40 @@ export const load = async ({ params, locals: { user, pb } }) => {
 			return null;
 		}
 	}
+	async function getRating() {
+		try {
+			const rating = await pb
+				.collection('ratings')
+				.getFirstListItem<Rating>(`user = "${userId}" && course = "${courseId}"`);
 
-	const [course, subscription] = await Promise.all([getCourse(), getSubscription()]);
-	return { course, subscription, isSubscribed: !!subscription };
+			if (!rating) {
+				return 0;
+			}
+
+			return rating.rating; // Assuming you want the rating value, not the entire object
+		} catch (e) {
+			console.log('Error fetching rating:', e);
+			return 0; // Return 0 in case of error
+		}
+	}
+	async function getAverageRating() {
+		try {
+			const ratings = await pb.collection('ratings').getFullList({
+				filter: `course = "${courseId}"`
+			});
+			const avgRating = ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length;
+			const formattedAvgRating = avgRating.toFixed(1); // returns a string
+			return parseFloat(formattedAvgRating); // Convert back to float if necessary
+		} catch (e) {
+			console.log(e);
+		}
+	}
+	const [course, subscription, rating, avgRating] = await Promise.all([
+		getCourse(),
+		getSubscription(),
+		getRating(),
+		getAverageRating()
+	]);
+	return { course, subscription, isSubscribed: !!subscription, rating, avgRating };
 };
 export const actions = {};

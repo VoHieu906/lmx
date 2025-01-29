@@ -29,7 +29,8 @@
 	import { toast } from 'svelte-sonner';
 	export let data;
 
-	let { course, subscription, isSubscribed } = data;
+	let { course, subscription, isSubscribed, rating, avgRating } = data;
+
 	let chapters = course.expand?.['chapters(course)'];
 
 	let progress = subscription?.progress;
@@ -53,13 +54,13 @@
 
 			if (res.ok) {
 				if (responseData.message === 'User is already subscribed to this course') {
-					toast.info(responseData.message); // Display as an info toast
+					toast.info(responseData.message);
 				} else {
-					toast.success('Subscription successful'); // Display as a success toast
+					toast.success('Subscription successful');
 					isSubscribed = true; // Update the state to reflect the subscription
 				}
 			} else {
-				toast.error(responseData.error || 'Failed to subscribe'); // Display as an error toast
+				toast.error(responseData.error || 'Failed to subscribe');
 			}
 		} catch (e) {
 			toast.error('Error subscribing to course');
@@ -89,17 +90,30 @@
 			toast.error('Error unsubscribing from course');
 		}
 	}
-	let rating: number = 0; // Store the rating selected by the user
-	let userRating: number | null = null; // Store the user's rating, initially null (not rated)
 
-	// Function to handle star click
+	let userRating: number | 0 = 0; // Store the user's rating, initially null (not rated)
+	let hoverRating: number = 0;
+
 	function handleRating(selectedRating: number): void {
-		userRating = selectedRating; // Update the user's rating
-		rating = selectedRating; // Update the rating shown in the stars
-		console.log(rating);
-		console.log(userRating);
+		userRating = selectedRating;
+		rating = selectedRating;
 		// Optionally, you can send the rating to the backend immediately
-		toast.success('Thank you for your rating!'); // Confirmation toast
+		let userRate = async () => {
+			await fetch('/api/rating', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ userId, courseId, userRating })
+			});
+		};
+		userRate();
+	}
+
+	function handleHover(hoveredRating: number): void {
+		hoverRating = hoveredRating;
+	}
+
+	function resetHover() {
+		hoverRating = 0;
 	}
 </script>
 
@@ -160,7 +174,7 @@
 				</div>
 			</div>
 
-			<div class="flex flex-col justify-center space-x-2 sm:flex-row sm:space-x-4">
+			<div class="flex flex-col justify-center space-x-1 sm:flex-row sm:space-x-3">
 				{#if isSubscribed}
 					{#if progress}
 						<div class="flex flex-col items-center gap-4">
@@ -205,18 +219,33 @@
 								<div class="flex flex-col items-center">
 									<div class="flex items-center space-x-1">
 										{#each [1, 2, 3, 4, 5] as star}
-											<Star
+											<button
+												id="star-button-{star}"
+												type="button"
+												class="star {rating >= star || hoverRating >= star ? 'filled' : ''}"
 												on:click={() => handleRating(star)}
-												class="cursor-pointer text-yellow-500"
-												size={24}
-												fill={userRating !== null && userRating >= star ? 'yellow' : 'none'}
-											/>
+												on:mouseover={() => handleHover(star)}
+												on:mouseout={resetHover}
+												on:focus={() => handleHover(star)}
+												on:blur={resetHover}
+												aria-label={`Rate ${star} star${star > 1 ? 's' : ''}`}
+											>
+												<svg
+													xmlns="http://www.w3.org/2000/svg"
+													fill="currentColor"
+													viewBox="0 0 24 24"
+												>
+													<path
+														d="M12 .587l3.668 7.568L24 9.75l-6 5.848 1.414 8.601L12 19.847l-7.414 4.352L6 15.598 0 9.75l8.332-1.595z"
+													/>
+												</svg>
+											</button>
 										{/each}
 									</div>
 
 									<p class="mt-2 text-sm text-gray-500">
-										{#if userRating !== null}
-											You rated this course {userRating} out of 5 stars.
+										{#if rating}
+											You rated this course {rating}/5 stars.
 										{:else}
 											Click on a star to rate this course!
 										{/if}
@@ -232,7 +261,7 @@
 							class="flex items-center rounded-md bg-green-600 px-4 py-2 font-semibold text-white transition duration-300 hover:bg-green-700"
 						>
 							<PlayCircle class="mr-2 h-5 w-5" />
-							Start CourseDemo
+							Study
 						</a>
 					</div>
 					<div class="mt-4 sm:mt-0">
@@ -282,19 +311,22 @@
 					</div>
 				</div>
 				<div class="flex items-center rounded-lg bg-yellow-100 p-2">
-					<Users class="mr-4 h-8 w-8 text-yellow-600" />
+					<Star class="mr-4 h-8 w-8 text-yellow-600" />
+
 					<div>
-						<span class="block text-lg font-semibold text-yellow-900"
-							>{courseDemo.enrolledStudents}</span
+						<span class="block text-lg font-semibold text-yellow-900">
+							{avgRating ? avgRating : 0}</span
 						>
-						<span class="text-sm text-yellow-700">Students</span>
+						<span class="text-sm text-yellow-700">Rating</span>
 					</div>
 				</div>
 				<div class="flex items-center rounded-lg bg-red-100 p-2">
-					<Star class="mr-4 h-8 w-8 text-red-600" />
+					<Users class="mr-4 h-8 w-8 text-yellow-600" />
 					<div>
-						<span class="block text-lg font-semibold text-red-900">{courseDemo.rating}</span>
-						<span class="text-sm text-red-700">Rating</span>
+						<span class="block text-lg font-semibold text-red-900"
+							>{courseDemo.enrolledStudents}</span
+						>
+						<span class="text-sm text-red-700">Student</span>
 					</div>
 				</div>
 			</div>
@@ -353,3 +385,24 @@
 		</div>
 	</div>
 </div>
+
+<style>
+	[id^='star-button-'] {
+		width: 32px;
+		height: 32px;
+		color: #d1d5db; /* Gray by default */
+		transition: color 0.2s ease;
+		background: none;
+		border: none;
+		padding: 0;
+		cursor: pointer;
+	}
+
+	[id^='star-button-'].filled {
+		color: #fbbf24; /* Yellow for filled stars */
+	}
+
+	[id^='star-button-']:focus {
+		outline: 2px solid #4f46e5; /* Focus outline for accessibility */
+	}
+</style>

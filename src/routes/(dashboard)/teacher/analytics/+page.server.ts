@@ -1,4 +1,4 @@
-import { type Course } from '$lib/type.js';
+import { type Rating, type Course } from '$lib/type.js';
 
 export const load = async ({ locals: { user, pb } }) => {
 	async function getCourse() {
@@ -11,6 +11,19 @@ export const load = async ({ locals: { user, pb } }) => {
 			return course;
 		} catch (e) {}
 	}
-	const [course] = await Promise.all([getCourse()]);
-	return { course };
+	async function getAverageRating() {
+		try {
+			const ratings = await pb.collection<Rating>('ratings').getFullList({
+				filter: `user = "${user?.id}"`
+			});
+			const avgRating = ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length;
+			const formattedAvgRating = avgRating.toFixed(1); // returns a string
+			return parseFloat(formattedAvgRating); // Convert back to float if necessary
+		} catch (e) {
+			console.log(e);
+		}
+	}
+
+	const [course, avgRating] = await Promise.all([getCourse(), getAverageRating()]);
+	return { course, avgRating };
 };

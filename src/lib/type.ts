@@ -51,3 +51,9 @@ export type Comment = RecordModel & {
 	chapter: string;
 	content: string;
 };
+export type Rating = RecordModel & {
+	user: string;
+	course: string;
+	rating: number;
+	comment?: string;
+};

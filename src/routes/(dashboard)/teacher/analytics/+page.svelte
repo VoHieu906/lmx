@@ -1,11 +1,11 @@
 <script>
 	import * as echarts from 'echarts';
-	import { Book, Clock, GitPullRequest, Users } from 'lucide-svelte';
+	import { Book, Clock, GitPullRequest, Star, Users } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 
 	export let data;
-	let { course } = data;
-	console.log(course);
+	let { course, overallAvgRating } = data;
+	console.log(overallAvgRating);
 	let totalViews = course?.reduce((courseAcc, course) => {
 		let chapterViews =
 			course.expand?.['chapters(course)']?.reduce(
@@ -142,9 +142,9 @@
 			</div>
 		</div>
 		<div class="flex items-center space-x-4 rounded-lg bg-yellow-100 p-2 shadow-lg">
-			<Clock class="size-6 text-yellow-600" />
+			<Star class="size-6 text-yellow-600" />
 			<div>
-				<p class="text-2xl font-bold">4.9</p>
+				<p class="text-2xl font-bold">{overallAvgRating ? overallAvgRating : 0}</p>
 				<h3 class="text-xl">Average rating</h3>
 			</div>
 		</div>
