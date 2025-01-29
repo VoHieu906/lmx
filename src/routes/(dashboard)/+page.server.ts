@@ -1,10 +1,15 @@
 import { type Course } from '$lib/type.js';
+import { redirect } from '@sveltejs/kit';
 
-export const load = async ({ locals: { pb } }) => {
+export const load = async ({ locals: { user, pb } }) => {
+	const userId = user?.id;
+	if (!userId) {
+		redirect(308, '/');
+	}
 	async function getCourse() {
 		try {
 			const courses = await pb.collection<Course>('courses').getFullList({
-				expand: 'ratings(course), category',
+				expand: 'ratings(course), category, chapters(course)',
 				filter: 'isPublished = true',
 				sort: '-created'
 			});
@@ -30,26 +35,79 @@ export const load = async ({ locals: { pb } }) => {
 					averageRating: null
 				};
 			});
-			const sortedCourses = coursesWithAverageRatings
+
+			// Separate courses into free and paid categories
+			const freeCourses: Course[] = [];
+			const paidCourses: Course[] = [];
+
+			coursesWithAverageRatings.forEach((course) => {
+				if (course.isFree) {
+					freeCourses.push(course);
+				} else {
+					paidCourses.push(course);
+				}
+			});
+
+			// Get the highest and lowest rated courses from the paid courses
+			const sortedPaidCourses = paidCourses
 				.filter((course) => course.averageRating !== null) // Remove courses with no ratings
 				.sort((a, b) => b.averageRating! - a.averageRating!); // Sort descending
 
-			// Get the highest and lowest rated courses
-			const highestRatedCourse = sortedCourses[0] || null;
-			const lowestRatedCourse = sortedCourses[sortedCourses.length - 1] || null;
+			// Get the highest and lowest rated courses from the paid courses
+			const highestRatedCourse = sortedPaidCourses[0] || null;
+			const lowestRatedCourse = sortedPaidCourses[sortedPaidCourses.length - 1] || null;
 
 			return {
-				course: coursesWithAverageRatings, // Return all courses with average ratings
+				course: coursesWithAverageRatings,
+				freeCourses,
+				paidCourses,
 				highestRatedCourse,
 				lowestRatedCourse
 			};
 		} catch (e) {
 			console.error(e);
-			return { course: [], highestRatedCourse: null, lowestRatedCourse: null };
+			return {
+				course: [],
+				freeCourses: [],
+				paidCourses: [],
+				highestRatedCourse: null,
+				lowestRatedCourse: null
+			};
 		}
 	}
-	const { course, highestRatedCourse, lowestRatedCourse } = await getCourse();
-	return { course, highestRatedCourse, lowestRatedCourse };
+	async function getSubscribedCourses() {
+		try {
+			const subscribedCourses = await pb.collection('subscriptions').getFullList({
+				filter: `user = "${userId}"`,
+				expand: 'course'
+			});
+
+			// Loop through each subscription and update the imageUrl of the course
+			subscribedCourses.forEach((subscription) => {
+				const course = subscription?.expand?.course;
+
+				if (course?.imageUrl) {
+					course.imageUrl = pb.files.getURL(course, course.imageUrl);
+				}
+			});
+
+			return subscribedCourses;
+		} catch (e) {
+			console.log('Error:', e);
+		}
+	}
+
+	const { course, freeCourses, paidCourses, highestRatedCourse, lowestRatedCourse } =
+		await getCourse();
+	const subscribedCourses = await getSubscribedCourses();
+	return {
+		course,
+		freeCourses,
+		paidCourses,
+		highestRatedCourse,
+		lowestRatedCourse,
+		subscribedCourses
+	};
 };
 
 export const actions = {

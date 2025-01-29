@@ -3,73 +3,8 @@
 	import CourseCard from '$lib/components/CourseCard.svelte';
 
 	export let data;
-	let { course, highestRatedCourse, lowestRatedCourse } = data;
-	console.log(course);
-	let enrolledCourses = [
-		{
-			id: 1,
-			title: 'Mathematics 101',
-			description: 'Basic concepts of algebra, geometry, and calculus.',
-			progress: 80,
-			image: ''
-		},
-		{
-			id: 2,
-			title: 'Biology',
-			description: 'Introduction to cell structure and human anatomy.',
-			progress: 50,
-			image: ''
-		},
-		{
-			id: 3,
-			title: 'Physics',
-			description: 'Understanding motion, energy, and forces.',
-			progress: 30,
-			image: ''
-		}
-	];
-
-	let paidCourses = [
-		{
-			id: '4',
-			title: 'Chemistry',
-			imageUrl: '',
-			price: 29.99,
-
-			category: 'Science',
-			chapterLength: 12
-		},
-		{
-			id: '5',
-			title: 'History 101',
-			imageUrl: '',
-			price: 19.99,
-
-			category: 'Social Studies',
-			chapterLength: 8
-		}
-	];
-
-	let freeCourses = [
-		{
-			id: '6',
-			title: 'Introduction to Programming',
-			imageUrl: '',
-			price: 0,
-
-			category: 'Computer Science',
-			chapterLength: 15
-		},
-		{
-			id: '7',
-			title: 'Art Basics',
-			imageUrl: '',
-			price: 0,
-
-			category: 'Art & Design',
-			chapterLength: 10
-		}
-	];
+	let { course, highestRatedCourse, freeCourses, paidCourses, subscribedCourses } = data;
+	console.log(subscribedCourses);
 </script>
 
 <div>
@@ -83,12 +18,16 @@
 
 		<section class="rounded-2xl bg-white p-6 shadow">
 			<h2 class="mb-4 text-xl font-bold">Your Enrolled Courses</h2>
-			<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-				{#each enrolledCourses as course}
+			<div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+				{#each subscribedCourses as course}
 					<div class="course-card overflow-hidden rounded-xl bg-gray-50 shadow hover:shadow-lg">
-						<img src={course.image} alt="{course.title} image" class="h-40 w-full object-cover" />
+						<img
+							src={course.expand?.course.imageUrl}
+							alt="{course.title} image"
+							class="h-40 w-full object-cover"
+						/>
 						<div class="p-4">
-							<h3 class="text-lg font-semibold">{course.title}</h3>
+							<h3 class="text-lg font-semibold">{course.expand?.course.title}</h3>
 							<p class="mb-2 text-sm text-gray-600">{course.description}</p>
 							<div class="mt-2">
 								<p class="text-sm text-gray-500">Progress: {course.progress}%</p>
@@ -176,7 +115,7 @@
 
 		<section class="rounded-2xl bg-white p-6 shadow">
 			<h2 class="mb-4 text-xl font-bold">Paid Courses</h2>
-			<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+			<div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 				{#each paidCourses as course}
 					<CourseCard
 						id={course.id}
@@ -184,8 +123,8 @@
 						imageUrl={course.imageUrl}
 						price={course.price}
 						progress={course.progress}
-						category={course.category}
-						chapterLength={course.chapterLength}
+						category={course.expand?.category.name}
+						chapterLength={course.expand?.['chapters(course)']?.length || 0}
 					/>
 				{/each}
 			</div>
@@ -193,7 +132,7 @@
 
 		<section class="rounded-2xl bg-white p-6 shadow">
 			<h2 class="mb-4 text-xl font-bold">Free Courses</h2>
-			<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+			<div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 				{#each freeCourses as course}
 					<CourseCard
 						id={course.id}
@@ -201,33 +140,11 @@
 						imageUrl={course.imageUrl}
 						price={course.price}
 						progress={course.progress}
-						category={course.category}
-						chapterLength={course.chapterLength}
+						category={course.expand?.category.name}
+						chapterLength={course.expand?.['chapters(course)']?.length || 0}
 					/>
 				{/each}
 			</div>
 		</section>
 	</main>
 </div>
-
-<style>
-	main {
-		padding: 1rem;
-	}
-
-	.course-card {
-		display: flex;
-		flex-direction: column;
-		height: 100%;
-		border-radius: 12px;
-	}
-
-	.course-card img {
-		border-bottom: 2px solid #e2e8f0;
-	}
-
-	.course-card:hover {
-		transform: translateY(-2px);
-		transition: transform 0.2s ease-in-out;
-	}
-</style>

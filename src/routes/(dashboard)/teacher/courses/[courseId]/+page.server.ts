@@ -157,6 +157,7 @@ export const actions = {
 			params
 		} = event;
 		const { courseId } = params;
+
 		const form = await superValidate(event, zod(priceSchema));
 		if (!form.valid) {
 			return fail(400, {
@@ -165,8 +166,14 @@ export const actions = {
 		}
 
 		try {
+			// Check if price is 0 to update the `isFree` property
+			const price = form.data.price; // Assuming price is part of the form data
+			form.data.isFree = price === 0; // Set isFree to true if price is 0, else false
+
+			// Update the course with the new data (including isFree)
 			await pb.collection('courses').update(courseId, form.data);
-			return message(form, 'successfully updated course price');
+
+			return message(form, 'Successfully updated course price');
 		} catch (e) {
 			const { message: errorMessage } = e as ClientResponseError;
 

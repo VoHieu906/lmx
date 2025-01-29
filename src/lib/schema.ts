@@ -22,6 +22,7 @@ export const courseSchema = z.object({
 	imgUrl: z.string().optional(),
 	price: z.number({ coerce: true }).optional(),
 	isPublished: z.boolean(),
+	isFree: z.boolean(),
 	category: z.string().optional(),
 	subscribers: z.number().optional()
 });
@@ -29,7 +30,7 @@ export const courseSchema = z.object({
 export const titleSchema = courseSchema.pick({ title: true });
 export const descriptionSchema = courseSchema.pick({ description: true });
 export const categorySchema = courseSchema.pick({ category: true });
-export const priceSchema = courseSchema.pick({ price: true });
+export const priceSchema = courseSchema.pick({ price: true, isFree: true });
 export const chapterTitleSchema = z.object({
 	title: z.string().min(1)
 });

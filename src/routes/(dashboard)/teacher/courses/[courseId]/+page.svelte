@@ -22,7 +22,6 @@
 		course.title,
 		course.description,
 		course.imageUrl,
-		course.price,
 		course.category,
 		course.expand?.['chapters(course)']?.some((chapter) => chapter.isPublished)
 	];
