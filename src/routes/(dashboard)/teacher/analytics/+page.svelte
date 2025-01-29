@@ -1,11 +1,11 @@
 <script>
 	import * as echarts from 'echarts';
-	import { Book, Clock, GitPullRequest, Star, Users } from 'lucide-svelte';
+	import { Crown, LucideBookA, Users, View } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 
 	export let data;
-	let { course, overallAvgRating } = data;
-	console.log(overallAvgRating);
+	let { course, highestRatedCourse, lowestRatedCourse } = data;
+	console.log(highestRatedCourse, lowestRatedCourse);
 	let totalViews = course?.reduce((courseAcc, course) => {
 		let chapterViews =
 			course.expand?.['chapters(course)']?.reduce(
@@ -17,7 +17,7 @@
 	let totalSubscribers = course?.reduce((subAcc, sub) => {
 		return subAcc + (sub?.subscribers ? sub?.subscribers : 0);
 	}, 0);
-	let totalCourses = course?.length;
+	let totalCourse = course?.length;
 	let lineChart, pieChart;
 	let selectedCourse = 'JavaScript'; // Default selected course
 
@@ -118,34 +118,76 @@
 
 <div class="container mx-auto px-4 py-8">
 	<!-- Info Boxes above the charts -->
-	<div class="mb-40 grid grid-cols-1 gap-8 px-6 sm:grid-cols-2 lg:grid-cols-4">
-		<div class="flex items-center space-x-4 rounded-lg bg-green-100 p-2 shadow-lg">
-			<Book class="size-6 text-green-600" />
-			<div>
-				<p class="text-2xl font-bold">{totalViews}</p>
-				<h3 class="text-xl">Total Views</h3>
+	<div class="mb-40 grid grid-cols-1 gap-6 px-6 sm:grid-cols-2 lg:grid-cols-4">
+		<!-- Total Views Card -->
+		<div
+			class="group relative overflow-hidden rounded-xl bg-gradient-to-br from-green-50 to-green-100 p-6 shadow-lg transition-all duration-300 hover:shadow-xl"
+		>
+			<div class="flex items-center space-x-4">
+				<View class="size-8 text-green-600" />
+				<div>
+					<p class="text-3xl font-bold text-green-900">{totalViews}</p>
+					<h3 class="text-lg font-medium text-green-700">Total Views</h3>
+				</div>
+			</div>
+			<div
+				class="absolute -bottom-4 -right-4 opacity-20 transition-opacity duration-300 group-hover:opacity-30"
+			>
+				<View class="size-24 text-green-600" />
 			</div>
 		</div>
 
-		<div class="flex items-center space-x-4 rounded-lg bg-blue-100 p-2 shadow-lg">
-			<Users class="size-6 text-blue-600" />
-			<div>
-				<p class="text-2xl font-bold">{totalSubscribers}</p>
-				<h3 class="text-xl">Total Subscribers</h3>
+		<!-- Total Subscribers Card -->
+		<div
+			class="group relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 p-6 shadow-lg transition-all duration-300 hover:shadow-xl"
+		>
+			<div class="flex items-center space-x-4">
+				<Users class="size-8 text-blue-600" />
+				<div>
+					<p class="text-3xl font-bold text-blue-900">{totalSubscribers}</p>
+					<h3 class="text-lg font-medium text-blue-700">Total Subscribers</h3>
+				</div>
+			</div>
+			<div
+				class="absolute -bottom-4 -right-4 opacity-20 transition-opacity duration-300 group-hover:opacity-30"
+			>
+				<Users class="size-24 text-blue-600" />
 			</div>
 		</div>
-		<div class="flex items-center space-x-4 rounded-lg bg-red-100 p-2 shadow-lg">
-			<GitPullRequest class="size-6 text-red-600" />
-			<div>
-				<p class="text-2xl font-bold">{totalCourses}</p>
-				<h3 class="text-xl">Total Course</h3>
+
+		<!-- Total Course Card -->
+		<div
+			class="group relative overflow-hidden rounded-xl bg-gradient-to-br from-red-50 to-red-100 p-6 shadow-lg transition-all duration-300 hover:shadow-xl"
+		>
+			<div class="flex items-center space-x-4">
+				<LucideBookA class="size-8 text-red-600" />
+				<div>
+					<p class="text-3xl font-bold text-red-900">{totalCourse}</p>
+					<h3 class="text-lg font-medium text-red-700">Total Course</h3>
+				</div>
+			</div>
+			<div
+				class="absolute -bottom-4 -right-4 opacity-20 transition-opacity duration-300 group-hover:opacity-30"
+			>
+				<LucideBookA class="size-24 text-red-600" />
 			</div>
 		</div>
-		<div class="flex items-center space-x-4 rounded-lg bg-yellow-100 p-2 shadow-lg">
-			<Star class="size-6 text-yellow-600" />
-			<div>
-				<p class="text-2xl font-bold">{overallAvgRating ? overallAvgRating : 0}</p>
-				<h3 class="text-xl">Average rating</h3>
+
+		<!-- Highest Rated Course Card -->
+		<div
+			class="group relative overflow-hidden rounded-xl bg-gradient-to-br from-yellow-50 to-yellow-100 p-6 shadow-lg transition-all duration-300 hover:shadow-xl"
+		>
+			<div class="flex items-center space-x-4">
+				<Crown class="size-8 text-yellow-600" />
+				<div class="flex-1 overflow-hidden">
+					<p class="truncate text-3xl font-bold text-yellow-900">{highestRatedCourse?.title}</p>
+					<h3 class="text-lg font-medium text-yellow-700">Highest Rated Course</h3>
+				</div>
+			</div>
+			<div
+				class="absolute -bottom-4 -right-4 opacity-20 transition-opacity duration-300 group-hover:opacity-30"
+			>
+				<Crown class="size-24 text-yellow-600" />
 			</div>
 		</div>
 	</div>
@@ -156,7 +198,7 @@
 			<!-- Dropdown in the top-left corner of the line chart -->
 			<div class="absolute left-8 top-0 z-10">
 				<select
-					id="courseSelect"
+					id="courseelect"
 					class="rounded-md border-2 border-indigo-500 bg-white px-2 py-1 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
 					bind:value={selectedCourse}
 					on:change={updateLineChart}

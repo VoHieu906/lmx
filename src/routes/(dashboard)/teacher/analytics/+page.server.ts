@@ -1,29 +1,51 @@
-import { type Rating, type Course } from '$lib/type.js';
+import { type Course } from '$lib/type.js';
 
 export const load = async ({ locals: { user, pb } }) => {
 	async function getCourse() {
 		try {
-			const course = await pb.collection<Course>('courses').getFullList({
-				expand: 'chapters(course)',
+			const courses = await pb.collection<Course>('courses').getFullList({
+				expand: 'chapters(course), ratings(course)',
 				filter: `user = "${user?.id}"`,
 				sort: '-created'
 			});
-			return course;
-		} catch (e) {}
-	}
-	async function getAverageRating() {
-		try {
-			const ratings = await pb.collection<Rating>('ratings').getFullList({
-				filter: `user = "${user?.id}"`
+
+			const coursesWithAverageRatings = courses.map((course) => {
+				const ratings = course.expand?.['ratings(course)']; // Ensure expand exists
+
+				if (ratings && ratings.length > 0) {
+					const totalRating = ratings.reduce((sum, rating) => sum + rating.rating, 0);
+					const averageRating = totalRating / ratings.length;
+
+					return {
+						...course,
+						averageRating
+					};
+				}
+
+				return {
+					...course,
+					averageRating: null // No ratings available
+				};
 			});
-			const avgRating = ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length;
-			const formattedAvgRating = avgRating.toFixed(1); // returns a string
-			return parseFloat(formattedAvgRating); // Convert back to float if necessary
+			const sortedCourses = coursesWithAverageRatings
+				.filter((course) => course.averageRating !== null) // Remove courses with no ratings
+				.sort((a, b) => b.averageRating! - a.averageRating!); // Sort descending
+
+			// Get the highest and lowest rated courses
+			const highestRatedCourse = sortedCourses[0] || null;
+			const lowestRatedCourse = sortedCourses[sortedCourses.length - 1] || null;
+
+			return {
+				course: coursesWithAverageRatings, // Return all courses with average ratings
+				highestRatedCourse,
+				lowestRatedCourse
+			};
 		} catch (e) {
-			console.log(e);
+			console.error(e);
+			return { course: [], highestRatedCourse: null, lowestRatedCourse: null };
 		}
 	}
 
-	const [course, avgRating] = await Promise.all([getCourse(), getAverageRating()]);
-	return { course, avgRating };
+	const { course, highestRatedCourse, lowestRatedCourse } = await getCourse();
+	return { course, highestRatedCourse, lowestRatedCourse };
 };
