@@ -4,7 +4,7 @@ export const load = async ({ locals: { user, pb } }) => {
 	async function getCourse() {
 		try {
 			const courses = await pb.collection<Course>('courses').getFullList({
-				expand: 'chapters(course), ratings(course)',
+				expand: 'chapters(course), ratings(course), subscriptions(course)',
 				filter: `user = "${user?.id}"`,
 				sort: '-created'
 			});

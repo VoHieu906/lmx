@@ -1,11 +1,17 @@
-<script>
+<script lang="ts">
+	import type { Course } from '$lib/type.js';
 	import * as echarts from 'echarts';
+	import type { ECharts } from 'echarts';
 	import { Crown, LucideBookA, Users, View } from 'lucide-svelte';
 	import { onMount } from 'svelte';
+	// Define the type for courseData
+	type CourseData = {
+		[key: string]: number[]; // Assuming the structure is { courseTitle: [monthlySubscriberCount] }
+	};
 
 	export let data;
-	let { course, highestRatedCourse, lowestRatedCourse } = data;
-	console.log(highestRatedCourse, lowestRatedCourse);
+	let { course, highestRatedCourse } = data;
+
 	let totalViews = course?.reduce((courseAcc, course) => {
 		let chapterViews =
 			course.expand?.['chapters(course)']?.reduce(
@@ -14,20 +20,38 @@
 			) || 0;
 		return courseAcc + chapterViews;
 	}, 0);
+
 	let totalSubscribers = course?.reduce((subAcc, sub) => {
 		return subAcc + (sub?.subscribers ? sub?.subscribers : 0);
 	}, 0);
-	let totalCourse = course?.length;
-	let lineChart, pieChart;
-	let selectedCourse = 'JavaScript'; // Default selected course
 
-	const courseData = {
-		JavaScript: [120, 132, 101, 134, 90, 230, 210, 180, 250, 300, 280, 310],
-		Python: [220, 182, 191, 234, 290, 330, 310, 280, 290, 310, 400, 390],
-		React: [150, 232, 201, 154, 190, 330, 410, 400, 380, 390, 450, 460],
-		Backend: [98, 77, 101, 99, 40, 80, 60, 70, 90, 120, 110, 130]
+	let totalCourse = course?.length;
+	let lineChart: ECharts;
+	let pieChart: ECharts;
+
+	// Group subscribers by month
+	const groupSubscribersByMonth = (course: Course) => {
+		const subscriptions = course.expand?.['subscriptions(course)'] || [];
+		const monthlySubscribers = Array(12).fill(0); // Start with 0 for all 12 months
+		subscriptions.forEach((sub) => {
+			const month = new Date(sub.created).getMonth(); // Get the month (0-11)
+			monthlySubscribers[month] += 1; // Increment the subscriber count for that month
+		});
+		return monthlySubscribers;
 	};
 
+	// Initialize courseData as an empty object to hold monthly subscribers data for each course
+	let courseData: CourseData = {};
+
+	// Populate courseData with the monthly subscribers for each course
+	course.forEach((c) => {
+		courseData[c.title] = groupSubscribersByMonth(c);
+	});
+
+	// Default selected course (first course in the array)
+	let selectedCourse = course?.[0]?.title || '';
+
+	// Update the line chart when the selected course changes
 	const updateLineChart = () => {
 		if (lineChart) {
 			lineChart.setOption({
@@ -42,6 +66,10 @@
 		}
 	};
 
+	// Watch for changes in selected course and update the chart accordingly
+	$: selectedCourse, updateLineChart();
+
+	// Initialize charts when the component mounts
 	onMount(() => {
 		if (typeof window !== 'undefined') {
 			const lineChartDom = document.getElementById('lineChart');
@@ -49,14 +77,11 @@
 			lineChart.setOption({
 				title: {
 					text: 'Course Enrollment Over Time',
-					left: 'center'
+					left: 'center',
+					bottom: 'left'
 				},
 				tooltip: {
 					trigger: 'axis'
-				},
-				legend: {
-					data: [selectedCourse],
-					bottom: 0
 				},
 				xAxis: {
 					type: 'category',
@@ -70,7 +95,7 @@
 					{
 						name: selectedCourse,
 						type: 'line',
-						data: courseData[selectedCourse]
+						data: courseData[selectedCourse] || [] // Fallback to empty array if no data available
 					}
 				]
 			});
@@ -80,15 +105,16 @@
 			pieChart = echarts.init(pieChartDom);
 			pieChart.setOption({
 				title: {
-					text: 'Course Distribution',
-					left: 'center'
+					text: 'View Distribution',
+					left: 'center',
+					bottom: 'left'
 				},
 				tooltip: {
 					trigger: 'item'
 				},
 				series: [
 					{
-						name: 'Course Distribution',
+						name: 'View Distribution',
 						type: 'pie',
 						radius: '50%',
 						data: [
@@ -203,10 +229,9 @@
 					bind:value={selectedCourse}
 					on:change={updateLineChart}
 				>
-					<option value="JavaScript">JavaScript</option>
-					<option value="Python">Python</option>
-					<option value="React">React</option>
-					<option value="Backend">Backend</option>
+					{#each course as c}
+						<option value={c.title}>{c.title}</option>
+					{/each}
 				</select>
 			</div>
 			<div id="lineChart" class="h-[400px] w-full"></div>
