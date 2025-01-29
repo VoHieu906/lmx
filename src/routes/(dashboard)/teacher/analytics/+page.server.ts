@@ -10,7 +10,7 @@ export const load = async ({ locals: { user, pb } }) => {
 			});
 
 			const coursesWithAverageRatings = courses.map((course) => {
-				const ratings = course.expand?.['ratings(course)']; // Ensure expand exists
+				const ratings = course.expand?.['ratings(course)'];
 
 				if (ratings && ratings.length > 0) {
 					const totalRating = ratings.reduce((sum, rating) => sum + rating.rating, 0);
@@ -24,19 +24,18 @@ export const load = async ({ locals: { user, pb } }) => {
 
 				return {
 					...course,
-					averageRating: null // No ratings available
+					averageRating: null
 				};
 			});
 			const sortedCourses = coursesWithAverageRatings
 				.filter((course) => course.averageRating !== null) // Remove courses with no ratings
 				.sort((a, b) => b.averageRating! - a.averageRating!); // Sort descending
 
-			// Get the highest and lowest rated courses
 			const highestRatedCourse = sortedCourses[0] || null;
 			const lowestRatedCourse = sortedCourses[sortedCourses.length - 1] || null;
 
 			return {
-				course: coursesWithAverageRatings, // Return all courses with average ratings
+				course: coursesWithAverageRatings,
 				highestRatedCourse,
 				lowestRatedCourse
 			};

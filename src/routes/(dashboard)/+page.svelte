@@ -3,7 +3,8 @@
 	import CourseCard from '$lib/components/CourseCard.svelte';
 
 	export let data;
-
+	let { course, highestRatedCourse, lowestRatedCourse } = data;
+	console.log(highestRatedCourse);
 	let enrolledCourses = [
 		{
 			id: 1,
@@ -101,6 +102,75 @@
 						</div>
 					</div>
 				{/each}
+			</div>
+		</section>
+
+		<section class="rounded-2xl bg-white p-8 shadow">
+			<h2 class="mb-6 text-2xl font-bold text-gray-800">🔥 Highest Rated Course</h2>
+
+			<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+				<!-- Course Image -->
+				<div class="relative">
+					<img
+						src={highestRatedCourse?.imageUrl}
+						alt={highestRatedCourse?.title}
+						class="h-72 w-full rounded-2xl object-cover shadow-md transition duration-300 hover:scale-105"
+					/>
+					<span
+						class="absolute right-4 top-4 rounded-lg bg-yellow-500 px-3 py-1 text-sm font-semibold text-white shadow-md"
+						>⭐ {highestRatedCourse?.averageRating.toFixed(1)}</span
+					>
+				</div>
+
+				<!-- Course Details -->
+				<div class="flex flex-col justify-center space-y-2">
+					<h3
+						class="bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 bg-clip-text text-xl font-extrabold uppercase tracking-wide text-transparent"
+					>
+						{highestRatedCourse?.title}
+					</h3>
+
+					<p
+						class="line-clamp-3 max-h-[4.5em] overflow-hidden text-[15px] italic
+           leading-relaxed text-gray-700 shadow-sm sm:line-clamp-4 sm:max-h-[6em]"
+					>
+						"{highestRatedCourse?.description}"
+					</p>
+
+					<span
+						class="inline-block w-max rounded-full bg-blue-100 px-4 py-1 text-sm font-medium text-blue-800 shadow-sm"
+					>
+						📚 {highestRatedCourse?.expand?.category.name}
+					</span>
+
+					<div class="rounded-lg bg-gray-100 p-2 shadow-inner">
+						<div class="flex items-center space-x-3 text-gray-700">
+							<span class="text-lg">👥</span>
+							<p class="text-sm font-medium">
+								<strong>{highestRatedCourse?.subscribers}</strong> Students Enrolled
+							</p>
+						</div>
+						<div class="mt-2 flex items-center space-x-3 text-gray-700">
+							<span class="text-lg">💰</span>
+							<p class="text-sm font-medium">
+								Price: <strong>${highestRatedCourse?.price}</strong>
+							</p>
+						</div>
+						<div class="mt-2 flex items-center space-x-3 text-gray-700">
+							<span class="text-lg">⭐</span>
+							<p class="text-sm font-medium">
+								Rating: <strong>{highestRatedCourse?.averageRating.toFixed(1)}</strong> / 5
+							</p>
+						</div>
+					</div>
+
+					<a
+						href={`/courses/${highestRatedCourse?.id}`}
+						class="mt-4 inline-block w-max rounded-xl bg-blue-600 px-5 py-2 text-white shadow-md transition-all duration-300 hover:bg-blue-700 hover:shadow-lg"
+					>
+						🚀 Enroll Now
+					</a>
+				</div>
 			</div>
 		</section>
 

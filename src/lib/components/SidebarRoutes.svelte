@@ -1,17 +1,17 @@
 <script lang="ts">
-	import { ChartNoAxesColumnIncreasing, Compass, Layout, List, Route } from 'lucide-svelte';
+	import { BookA, ChartNoAxesColumnIncreasing, Home, List } from 'lucide-svelte';
 	import SidebarItem from './SidebarItem.svelte';
 	import { page } from '$app/stores';
 
 	const guestRoutes = [
 		{
-			icon: Layout,
-			label: 'Course',
+			icon: Home,
+			label: 'Home',
 			href: '/'
 		},
 		{
-			icon: Compass,
-			label: 'Analytics',
+			icon: BookA,
+			label: 'Course',
 			href: '/search'
 		}
 	];
