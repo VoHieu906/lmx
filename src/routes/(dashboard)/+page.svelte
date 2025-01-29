@@ -4,7 +4,7 @@
 
 	export let data;
 	let { course, highestRatedCourse, lowestRatedCourse } = data;
-	console.log(highestRatedCourse);
+	console.log(course);
 	let enrolledCourses = [
 		{
 			id: 1,

@@ -50,6 +50,7 @@ export type Comment = RecordModel & {
 	user: string;
 	chapter: string;
 	content: string;
+	parentComment?: string;
 };
 export type Rating = RecordModel & {
 	user: string;

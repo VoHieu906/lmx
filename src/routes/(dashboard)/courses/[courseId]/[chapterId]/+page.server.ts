@@ -4,6 +4,8 @@ import { redirect } from '@sveltejs/kit';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 
+type CommentWithReplies = Comment & { replies: Comment[] };
+
 export const load = async ({ params, locals: { user, pb } }) => {
 	const { courseId, chapterId } = params;
 	const userId = user?.id;
@@ -11,6 +13,7 @@ export const load = async ({ params, locals: { user, pb } }) => {
 		redirect(308, '/');
 	}
 
+	// Function to fetch course data
 	async function getCourse() {
 		try {
 			const course = await pb.collection('courses').getOne<Course>(courseId, {
@@ -38,6 +41,8 @@ export const load = async ({ params, locals: { user, pb } }) => {
 			console.log('error:', e);
 		}
 	}
+
+	// Function to get subscription info
 	async function getSubscription() {
 		try {
 			const subscription = await pb
@@ -48,6 +53,8 @@ export const load = async ({ params, locals: { user, pb } }) => {
 			return null;
 		}
 	}
+
+	// Function to fetch chapter data
 	async function getChapter() {
 		try {
 			const chapter = await pb.collection('chapters').getOne<Chapter>(chapterId, {
@@ -63,16 +70,36 @@ export const load = async ({ params, locals: { user, pb } }) => {
 			console.log('error:', e);
 		}
 	}
+
+	// Function to fetch comments
 	async function getComment() {
 		try {
-			const comment = await pb.collection('comments').getFullList<Comment>({
+			const comments = await pb.collection('comments').getFullList<Comment>({
 				filter: `chapter = "${chapterId}"`,
 				sort: '-created',
-				expand: 'user'
+				expand: 'user,parentComment'
 			});
-			return comment;
+			const groupedComments: { [key: string]: CommentWithReplies } = comments.reduce(
+				(acc, comment) => {
+					if (!comment.parentComment) {
+						acc[comment.id] = { ...comment, replies: [] };
+					} else {
+						const parent = acc[comment.parentComment];
+						if (parent) {
+							parent.replies.push(comment);
+						}
+					}
+					return acc;
+				},
+				{} as { [key: string]: CommentWithReplies }
+			);
+			const topLevelComments = Object.values(groupedComments).filter(
+				(comment) => !comment.parentComment
+			);
+
+			return topLevelComments;
 		} catch (e) {
-			console.log('error:', e);
+			console.log('Error fetching comments:', e);
 		}
 	}
 
@@ -82,7 +109,9 @@ export const load = async ({ params, locals: { user, pb } }) => {
 		getSubscription(),
 		getComment()
 	]);
+
 	const chapterCommentForm = await superValidate(zod(chapterCommentSchema));
+
 	return {
 		chapter,
 		course,
@@ -92,6 +121,7 @@ export const load = async ({ params, locals: { user, pb } }) => {
 		comment
 	};
 };
+
 export const actions = {
 	createComment: async (event) => {
 		const {
@@ -105,20 +135,14 @@ export const actions = {
 		// Get the form data once and work with it
 		const formData = await request.formData();
 
-		// Validate the comment content using formData
 		const commentContent = formData.get('comment') as string | null;
+		const parentComment = formData.get('parentId') as string | null;
 
 		if (!commentContent) {
 			return fail(400, { message: 'Comment is required' });
 		}
 
-		console.log('Form Data: ', commentContent); // Debug the comment data
-
-		// Extract file (if any) from the formData
 		const file = formData.get('file') as File | null;
-
-		// Debug the file
-		console.log('Uploaded file: ', file);
 
 		const commentData: any = {
 			user: user?.id,
@@ -126,6 +150,10 @@ export const actions = {
 			content: commentContent
 		};
 
+		if (parentComment) {
+			commentData.parentComment = parentComment; // Include parentId if replying to a comment
+		}
+		console.log(commentData);
 		if (file && file.size > 0) {
 			commentData.file = file;
 			console.log('File attached to comment: ', file);

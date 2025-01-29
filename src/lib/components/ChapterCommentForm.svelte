@@ -5,10 +5,9 @@
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import { toast } from 'svelte-sonner';
 	import Textarea from './ui/textarea/textarea.svelte';
-	import { error } from '@sveltejs/kit';
 
 	export let data: SuperValidated<Infer<typeof chapterCommentSchema>>;
-
+	export let parentId: string | null = null;
 	const form = superForm(data, {
 		validators: zodClient(chapterCommentSchema)
 	});
@@ -24,23 +23,22 @@
 
 		const formElement = event.target as HTMLFormElement;
 		const formData = new FormData(formElement);
-		if (uploadedFile) {
-			formData.append('file', uploadedFile);
+
+		// Include parentId if replying to a comment
+		if (parentId) {
+			formData.append('parentId', parentId);
 		}
 
 		try {
 			const response = await fetch(formElement.action, { method: 'POST', body: formData });
 			if (response.ok) {
 				form.reset();
-				if (fileInput) fileInput.value = '';
-				uploadedFile = null;
 				toast.success('Submitted successfully!');
 			} else {
 				const errorData = await response.json();
 				toast.error(errorData.message || 'Submission failed');
 			}
 		} catch (e) {
-			console.log('Error submitting the form', error);
 			toast.error('An unexpected error occurred');
 		} finally {
 			submitting = false;
@@ -70,8 +68,8 @@
 	>
 		<Form.Field {form} name="comment">
 			<Form.Control let:attrs>
-				<div class="flex items-center">
-					<img src="" alt="User Avatar" class="size-10 rounded-full" />
+				<div class="flex items-center gap-x-4">
+					<img src="https://github.com/shadcn.png" alt="User Avatar" class="size-10 rounded-full" />
 					<Textarea
 						{...attrs}
 						class="w-full rounded-md border border-gray-300 p-3 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"

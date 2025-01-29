@@ -38,6 +38,7 @@ export const chapterDescriptionSchema = z.object({
 });
 export const chapterCommentSchema = z.object({
 	comment: z.string().min(1),
+	parentComment: z.string().optional(),
 	file: z.instanceof(File).optional()
 });
 export const chapterAccessSchema = z.object({

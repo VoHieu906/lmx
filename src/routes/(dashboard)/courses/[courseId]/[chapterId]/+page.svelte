@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { formatTime } from '$lib/utils';
-	import { Files, Eye, CalendarClock } from 'lucide-svelte';
+	import { Files, Eye, CalendarClock, Reply } from 'lucide-svelte';
 	import { page } from '$app/stores';
 	import { get } from 'svelte/store';
 	import type { Chapter, Comment, Course } from '$lib/type.js';
@@ -27,7 +27,9 @@
 			comments = data.comment;
 			otherChapters = course?.expand?.['chapters(course)'] || [];
 		}
+		console.log(comments);
 	}
+
 	onMount(() => {
 		const storedColor = localStorage.getItem('userAvatarColor');
 		userAvatarColor = storedColor || getRandomColor();
@@ -100,6 +102,16 @@
 		} catch (e) {
 			console.log('Error updating view count ');
 		}
+	}
+	let replyFormVisible: Record<string, boolean> = {};
+	let showCommentForm = false;
+	function toggleCommentForm() {
+		showCommentForm = !showCommentForm;
+	}
+	function toggleReplyForm(commentId: string) {
+		replyFormVisible[commentId] = !replyFormVisible[commentId];
+		// Force reactivity update
+		replyFormVisible = { ...replyFormVisible };
 	}
 </script>
 
@@ -187,7 +199,7 @@
 				<!-- Display Comments -->
 				<div class="mt-6 space-y-4">
 					{#each comments || [] as cmt}
-						<div class="flex space-x-4 p-4">
+						<div class="flex space-x-4 rounded-lg py-4">
 							{#if cmt?.expand?.user?.avatar}
 								<img
 									src={cmt?.expand?.user?.avatar}
@@ -208,18 +220,36 @@
 									<p class="text-xs text-gray-500">1 hour ago</p>
 								</div>
 								<p class="mt-1 text-gray-600">{cmt.content}</p>
+
 								{#if cmt.file}
 									<div
-										class=" flex w-[20%] items-center rounded border border-sky-200 bg-sky-100 p-2"
+										class="flex w-[20%] items-center rounded border border-sky-200 bg-sky-100 p-2"
 									>
 										<Files class="m-1 size-4 flex-shrink-0" />
 										<p class="line-clamp-1 text-xs">{cmt.file}</p>
 									</div>
 								{/if}
+
 								<div class="mt-2 flex space-x-4 text-sm text-gray-500">
 									<button class="hover:text-blue-500">Like</button>
-									<button class="hover:text-blue-500">Reply</button>
+									<button class="hover:text-blue-500" on:click={() => toggleReplyForm(cmt.id)}
+										><Reply /></button
+									>
 								</div>
+
+								<!-- Show Reply Form when replyFormVisible[cmt.id] is true -->
+								{#if replyFormVisible[cmt.id]}
+									<div class=" mt-4">
+										<ChapterCommentForm data={data.chapterCommentForm} parentId={cmt.id} />
+									</div>
+								{/if}
+
+								<!-- Recursive Display of Replies -->
+								{#if cmt.replies}
+									<div class="ml-12 mt-4 border-l-2 border-gray-300 pl-4">
+										{cmt.replies}
+									</div>
+								{/if}
 							</div>
 						</div>
 					{/each}

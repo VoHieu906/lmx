@@ -78,7 +78,7 @@
 				{#each paginatedCourses as course (course.id)}
 					<Table.Row>
 						<Table.Cell>{course.title}</Table.Cell>
-						<Table.Cell>{formatCurrency(course.price)}</Table.Cell>
+						<Table.Cell>{formatCurrency(course.price || 0)}</Table.Cell>
 						<Table.Cell>
 							<IsPublishedBadge value={course.isPublished} />
 						</Table.Cell>
