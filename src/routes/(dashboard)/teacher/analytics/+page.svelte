@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Course } from '$lib/type.js';
+	import type { Chapter, Course } from '$lib/type.js';
 	import * as echarts from 'echarts';
 	import type { ECharts } from 'echarts';
 	import { Crown, LucideBookA, Users, View } from 'lucide-svelte';
@@ -11,7 +11,7 @@
 
 	export let data;
 	let { course, highestRatedCourse } = data;
-
+	console.log(course);
 	let totalViews = course?.reduce((courseAcc, course) => {
 		let chapterViews =
 			course.expand?.['chapters(course)']?.reduce(
@@ -50,6 +50,27 @@
 
 	// Default selected course (first course in the array)
 	let selectedCourse = course?.[0]?.title || '';
+
+	// Calculate total views for each course
+	const calculateTotalViewsForCourse = (course) => {
+		return (
+			course.expand?.['chapters(course)']?.reduce(
+				(total: number, chapter: Chapter) => total + (chapter.views || 0),
+				0
+			) || 0
+		);
+	};
+
+	// Prepare pie chart data based on total views of each course
+	const preparePieChartData = () => {
+		const pieData = course.map((c) => {
+			return {
+				name: c.title,
+				value: calculateTotalViewsForCourse(c)
+			};
+		});
+		return pieData;
+	};
 
 	// Update the line chart when the selected course changes
 	const updateLineChart = () => {
@@ -117,12 +138,16 @@
 						name: 'View Distribution',
 						type: 'pie',
 						radius: '50%',
-						data: [
-							{ value: 335, name: 'JavaScript' },
-							{ value: 310, name: 'Python' },
-							{ value: 234, name: 'React' },
-							{ value: 135, name: 'Backend' }
-						]
+						data: preparePieChartData(),
+						label: {
+							show: true,
+							formatter: '{b}: {d}%', // Shows the label name (b) and percentage (d)
+							position: 'outside', // Position the label outside the slice
+							distance: 10 // Adjusts the distance between the label and the slice
+						},
+						labelLine: {
+							show: true // Ensure the label line is visible to connect the label to the slice
+						}
 					}
 				]
 			});
