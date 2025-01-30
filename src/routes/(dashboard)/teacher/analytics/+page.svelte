@@ -247,18 +247,21 @@
 	<div class="grid grid-cols-1 gap-8 md:grid-cols-2">
 		<div class="relative">
 			<!-- Dropdown in the top-left corner of the line chart -->
-			<div class="absolute left-8 top-0 z-10">
-				<select
-					id="courseelect"
-					class="rounded-md border-2 border-indigo-500 bg-white px-2 py-1 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
-					bind:value={selectedCourse}
-					on:change={updateLineChart}
-				>
-					{#each course as c}
-						<option value={c.title}>{c.title}</option>
-					{/each}
-				</select>
-			</div>
+			{#if course.length > 0}
+				<div class="absolute left-8 top-0 z-10">
+					<select
+						id="courseelect"
+						class="rounded-md border-2 border-indigo-500 bg-white px-2 py-1 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+						bind:value={selectedCourse}
+						on:change={updateLineChart}
+					>
+						{#each course as c}
+							<option value={c.title}>{c.title}</option>
+						{/each}
+					</select>
+				</div>
+			{/if}
+
 			<div id="lineChart" class="h-[400px] w-full"></div>
 		</div>
 		<div id="pieChart" class="h-[400px] w-full"></div>

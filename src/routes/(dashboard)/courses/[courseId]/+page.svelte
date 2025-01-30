@@ -10,7 +10,8 @@
 		Tag,
 		PlayCircle,
 		Check,
-		X
+		X,
+		CassetteTape
 	} from 'lucide-svelte';
 
 	const courseDemo = {
@@ -25,7 +26,7 @@
 		image: ''
 	};
 	import { page } from '$app/stores';
-	import { formatDurationWithUnits } from '$lib/utils.js';
+	import { formatDurationWithUnits, formatTime } from '$lib/utils.js';
 	import { toast } from 'svelte-sonner';
 	export let data;
 
@@ -41,7 +42,7 @@
 	let showModal = false;
 	let userId = data?.user?.id;
 	let courseId = data.course.id;
-
+	console.log(course);
 	async function subscribe() {
 		try {
 			const res = await fetch('/api/subscribe', {
@@ -137,16 +138,6 @@
 					<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
 					<div class="absolute bottom-0 left-0 right-0 p-4 text-white">
 						<h1 class="mb-2 text-2xl font-bold sm:text-3xl">{course.title}</h1>
-						<div class="flex flex-wrap gap-2">
-							{#each course.tags as tag}
-								<span
-									class="inline-flex items-center rounded-full bg-indigo-100 px-2 py-1 text-xs font-medium text-indigo-800"
-								>
-									<Tag class="mr-1 h-3 w-3" />
-									{tag}
-								</span>
-							{/each}
-						</div>
 					</div>
 				</div>
 			</div>
@@ -168,17 +159,19 @@
 						</div>
 					</div>
 					<div class="flex items-center">
-						<BarChart class="mr-3 h-6 w-6 text-indigo-600" />
+						<CassetteTape class="mr-3 h-6 w-6 text-indigo-600" />
 						<div>
-							<h3 class="text-sm font-medium text-gray-500">Level</h3>
-							<p class="mt-1 text-sm text-gray-900">{courseDemo.level}</p>
+							<h3 class="text-sm font-medium text-gray-500">Category</h3>
+							<p class="mt-1 text-sm text-gray-900">{course.expand?.category.name}</p>
 						</div>
 					</div>
 					<div class="flex items-center">
 						<Calendar class="mr-3 h-6 w-6 text-indigo-600" />
 						<div>
 							<h3 class="text-sm font-medium text-gray-500">Last Updated</h3>
-							<p class="mt-1 text-sm text-gray-900">{courseDemo.lastUpdated}</p>
+							<p class="mt-1 text-sm text-gray-900">
+								{course.created ? formatTime(course.created) : ''}
+							</p>
 						</div>
 					</div>
 				</div>
@@ -279,15 +272,18 @@
 							on:click={confirmUnsubscribe}
 							class="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
 						>
-							Unsubscribe
+							<p class="flex items-center justify-center">
+								<X />
+								Unenroll
+							</p>
 						</button>
 						<!-- Confirmation Modal -->
 						{#if showModal}
 							<div class=" fixed inset-0 flex items-center justify-center">
 								<div class="w-96 rounded-lg bg-white p-6 shadow-xl">
-									<h2 class="text-lg font-semibold">Confirm Unsubscription</h2>
+									<h2 class="text-lg font-semibold">Confirm Unenroll</h2>
 									<p class="mt-2 text-gray-600">
-										Are you sure you want to unsubscribe from this course?
+										Are you sure you want to unenroll from this course?
 									</p>
 									<div class="mt-4 flex justify-end space-x-3">
 										<button
@@ -358,7 +354,9 @@
 					<Users class="mr-4 h-8 w-8 text-yellow-600" />
 					<div>
 						<span class="block text-lg font-semibold text-red-900"
-							>{course.expand?.['subscriptions(course)']?.length}</span
+							>{course.expand?.['subscriptions(course)']
+								? course.expand?.['subscriptions(course)']?.length
+								: 0}</span
 						>
 						<span class="text-sm text-red-700">Student</span>
 					</div>

@@ -11,14 +11,14 @@
 		},
 		{
 			icon: BookA,
-			label: 'Course',
+			label: 'Courses',
 			href: '/search'
 		}
 	];
 	const teacherRoutes = [
 		{
 			icon: List,
-			label: 'Course',
+			label: 'Courses',
 			href: '/teacher/courses'
 		},
 		{

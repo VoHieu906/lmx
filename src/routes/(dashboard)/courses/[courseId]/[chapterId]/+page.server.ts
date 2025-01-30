@@ -13,7 +13,6 @@ export const load = async ({ params, locals: { user, pb } }) => {
 		redirect(308, '/');
 	}
 
-	// Function to fetch course data
 	async function getCourse() {
 		try {
 			const course = await pb.collection('courses').getOne<Course>(courseId, {
@@ -54,7 +53,6 @@ export const load = async ({ params, locals: { user, pb } }) => {
 		}
 	}
 
-	// Function to fetch chapter data
 	async function getChapter() {
 		try {
 			const chapter = await pb.collection('chapters').getOne<Chapter>(chapterId, {
@@ -65,6 +63,21 @@ export const load = async ({ params, locals: { user, pb } }) => {
 				chapter.videoUrl = videoUrl;
 			}
 
+			if (chapter?.thumbnailUrl) {
+				const thumbnailUrl = pb.files.getURL(chapter, chapter.thumbnailUrl);
+				chapter.thumbnailUrl = thumbnailUrl;
+			}
+
+			if (chapter?.expand?.['attachments(chapter)']) {
+				chapter.expand['attachments(chapter)'] = chapter.expand['attachments(chapter)'].map(
+					(attachment: any) => {
+						if (attachment.url && attachment.url.length > 0) {
+							attachment.url = pb.files.getURL(attachment, attachment.url[0]);
+						}
+						return attachment;
+					}
+				);
+			}
 			return chapter;
 		} catch (e) {
 			console.log('error:', e);
@@ -74,12 +87,29 @@ export const load = async ({ params, locals: { user, pb } }) => {
 	// Function to fetch comments
 	async function getComment() {
 		try {
+			// Fetch comments from PocketBase
 			const comments = await pb.collection('comments').getFullList<Comment>({
 				filter: `chapter = "${chapterId}"`,
 				sort: '-created',
-				expand: 'user,parentComment'
+				expand: 'user,parentComment' // Expand user and parentComment
 			});
-			const groupedComments: { [key: string]: CommentWithReplies } = comments.reduce(
+
+			// Normalize the parentComment field
+			const normalizedComments = comments.map((comment) => {
+				const normalizedParentComment =
+					comment.parentComment && comment.parentComment.trim() !== ''
+						? comment.parentComment
+						: null;
+				return {
+					...comment,
+					parentComment: normalizedParentComment
+				};
+			});
+
+			console.log('Normalized comments:', normalizedComments);
+
+			// Group comments by parentComment
+			const groupedComments: { [key: string]: CommentWithReplies } = normalizedComments.reduce(
 				(acc, comment) => {
 					if (!comment.parentComment) {
 						acc[comment.id] = { ...comment, replies: [] };
@@ -93,6 +123,8 @@ export const load = async ({ params, locals: { user, pb } }) => {
 				},
 				{} as { [key: string]: CommentWithReplies }
 			);
+
+			// Filter out top-level comments (those without a parentComment)
 			const topLevelComments = Object.values(groupedComments).filter(
 				(comment) => !comment.parentComment
 			);
@@ -100,6 +132,7 @@ export const load = async ({ params, locals: { user, pb } }) => {
 			return topLevelComments;
 		} catch (e) {
 			console.log('Error fetching comments:', e);
+			return [];
 		}
 	}
 

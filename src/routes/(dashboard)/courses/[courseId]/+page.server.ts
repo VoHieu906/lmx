@@ -10,7 +10,7 @@ export const load = async ({ params, locals: { user, pb } }) => {
 	async function getCourse() {
 		try {
 			const course = await pb.collection('courses').getOne<Course>(courseId, {
-				expand: 'chapters(course),user,subscriptions(course), ratings(course)'
+				expand: 'chapters(course),user,subscriptions(course), ratings(course), category'
 			});
 			if (course.imageUrl) {
 				const imageUrl = pb.files.getURL(course, course.imageUrl);
@@ -45,7 +45,7 @@ export const load = async ({ params, locals: { user, pb } }) => {
 			return rating.rating; // Assuming you want the rating value, not the entire object
 		} catch (e) {
 			console.log('Error fetching rating:', e);
-			return 0; // Return 0 in case of error
+			return 0;
 		}
 	}
 	async function getAverageRating() {
@@ -54,8 +54,8 @@ export const load = async ({ params, locals: { user, pb } }) => {
 				filter: `course = "${courseId}"`
 			});
 			const avgRating = ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length;
-			const formattedAvgRating = avgRating.toFixed(1); // returns a string
-			return parseFloat(formattedAvgRating); // Convert back to float if necessary
+			const formattedAvgRating = avgRating.toFixed(1);
+			return parseFloat(formattedAvgRating);
 		} catch (e) {
 			console.log(e);
 		}

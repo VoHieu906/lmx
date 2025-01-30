@@ -47,7 +47,7 @@
 	{#if !isEditing}
 		<p class={cn('mt-2 break-all text-sm', { 'text-muted-foreground': !data.data.price })}>
 			{#if price === 0}
-				<span>Free</span> <!-- Show 'Free' when price is 0 -->
+				<span>Free</span>
 			{:else}
 				{(price && formatCurrency(price)) || 'No price'}
 			{/if}

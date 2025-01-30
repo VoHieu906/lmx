@@ -41,9 +41,9 @@
 		: [];
 </script>
 
-<div class="grid grid-cols-2 gap-4 px-6 pt-6 md:mb-0">
+<div class="grid grid-cols-2 gap-4 px-6 md:mb-0">
 	<!-- Left Column -->
-	<div class="grid grid-cols-2 gap-4 px-6 pt-6 md:mb-0">
+	<div class="grid grid-cols-2 gap-4 pt-6 md:mb-0">
 		<!-- Left Column: Search -->
 		<Search {courses} on:search={handleSearch} class="w-full" />
 

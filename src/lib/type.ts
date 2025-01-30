@@ -48,10 +48,11 @@ export type Subscription = RecordModel & {
 	completedChapters: string[];
 };
 export type Comment = RecordModel & {
-	user: string;
-	chapter: string;
+	user: string | AuthModel;
+	chapter: string | Chapter;
 	content: string;
-	parentComment?: string;
+	file?: string;
+	parentComment?: string | null;
 };
 export type Rating = RecordModel & {
 	user: string;

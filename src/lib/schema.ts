@@ -24,7 +24,8 @@ export const courseSchema = z.object({
 	isPublished: z.boolean(),
 	isFree: z.boolean(),
 	category: z.string().optional(),
-	subscribers: z.number().optional()
+	subscribers: z.number().optional(),
+	created: z.string().optional()
 });
 
 export const titleSchema = courseSchema.pick({ title: true });

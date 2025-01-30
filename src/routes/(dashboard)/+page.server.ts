@@ -48,14 +48,13 @@ export const load = async ({ locals: { user, pb } }) => {
 				}
 			});
 
-			// Get the highest and lowest rated courses from the paid courses
-			const sortedPaidCourses = paidCourses
+			// Get the highest and lowest rated courses from all courses
+			const allRatedCourses = coursesWithAverageRatings
 				.filter((course) => course.averageRating !== null) // Remove courses with no ratings
 				.sort((a, b) => b.averageRating! - a.averageRating!); // Sort descending
 
-			// Get the highest and lowest rated courses from the paid courses
-			const highestRatedCourse = sortedPaidCourses[0] || null;
-			const lowestRatedCourse = sortedPaidCourses[sortedPaidCourses.length - 1] || null;
+			const highestRatedCourse = allRatedCourses[0] || null;
+			const lowestRatedCourse = allRatedCourses[allRatedCourses.length - 1] || null;
 
 			return {
 				course: coursesWithAverageRatings,

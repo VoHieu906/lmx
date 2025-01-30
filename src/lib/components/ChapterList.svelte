@@ -49,7 +49,6 @@
 				{item.title}
 			</p>
 			<div class="ml-auto flex items-center gap-x-2 pr-2">
-				<!-- isFree  in a badge-->
 				{#if item.isFree}
 					<Badge>free</Badge>
 				{/if}

@@ -7,7 +7,6 @@
 
 	export let items: Category[];
 
-	// Dùng derived store để cập nhật currentCategory khi URL thay đổi
 	const currentCategory = derived(page, ($page) => $page.url.searchParams.get('categoryId') || '');
 
 	function updateCategory(categoryId: string) {
