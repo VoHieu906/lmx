@@ -4,6 +4,7 @@
 	import type { CourseWithProgressWithCategory } from '$lib/type';
 	import { page } from '$app/stores';
 	import Search from '$lib/components/Search.svelte';
+	import { DollarSign } from 'lucide-svelte';
 
 	export let data;
 	$: courses = data.allCourses;
@@ -40,31 +41,40 @@
 		: [];
 </script>
 
-<div class="block px-6 pt-6 md:mb-0">
-	<Search {courses} on:search={handleSearch} />
-	<div class="mt-4 w-[50%]">
-		<div class="mt-2 text-sm text-gray-600">Price Filter</div>
-		<select
-			id="priceFilter"
-			bind:value={priceFilter}
-			class="mt-1 block w-full rounded-md border border-gray-500 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-		>
-			<option value="all">All</option>
-			<option value="free">Free</option>
-			<option value="paid">Paid</option>
-		</select>
-	</div>
-	{#if priceFilter === 'paid'}
-		<div class="mt-4 w-[50%]">
-			<div class="mt-2 text-sm text-gray-600">
-				Selected Range: ${minPrice} - ${maxPrice}
+<div class="grid grid-cols-2 gap-4 px-6 pt-6 md:mb-0">
+	<!-- Left Column -->
+	<div class="grid grid-cols-2 gap-4 px-6 pt-6 md:mb-0">
+		<!-- Left Column: Search -->
+		<Search {courses} on:search={handleSearch} class="w-full" />
+
+		<!-- Right Column: Price Filter & Selected Range -->
+		<div class="w-full">
+			<!-- Price Filter with Icon -->
+			<div class="relative">
+				<DollarSign class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500" />
+				<select
+					id="priceFilter"
+					bind:value={priceFilter}
+					class="mt-1 block w-full appearance-none rounded bg-gray-100 py-2 pl-10 pr-5 text-base text-gray-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm"
+				>
+					<option value="all">All</option>
+					<option value="free">Free</option>
+					<option value="paid">Paid</option>
+				</select>
 			</div>
-			<div class="flex items-center space-x-4">
-				<input type="range" min={0} max={1000} step={10} bind:value={minPrice} class="w-full" />
-				<input type="range" min={0} max={1000} step={10} bind:value={maxPrice} class="w-full" />
-			</div>
+
+			<!-- Selected Range (Only appears when "Paid" is selected) -->
+			{#if priceFilter === 'paid'}
+				<div class="mt-3">
+					<div class="text-sm text-gray-600">${minPrice} - ${maxPrice}</div>
+					<div class="flex items-center space-x-4">
+						<input type="range" min={0} max={1000} step={10} bind:value={minPrice} class="w-full" />
+						<input type="range" min={0} max={1000} step={10} bind:value={maxPrice} class="w-full" />
+					</div>
+				</div>
+			{/if}
 		</div>
-	{/if}
+	</div>
 </div>
 
 <div class="p-6">

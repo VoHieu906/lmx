@@ -2,22 +2,18 @@
 	import type { Category } from '$lib/type';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { get } from 'svelte/store';
+	import { derived } from 'svelte/store';
 	import { List } from 'lucide-svelte';
 
 	export let items: Category[];
 
-	let currentCategory: string = '';
-
-	$: {
-		const searchParams = get(page).url.searchParams;
-		currentCategory = searchParams.get('categoryId') || '';
-	}
+	// Dùng derived store để cập nhật currentCategory khi URL thay đổi
+	const currentCategory = derived(page, ($page) => $page.url.searchParams.get('categoryId') || '');
 
 	function updateCategory(categoryId: string) {
-		const searchParams = new URLSearchParams(get(page).url.searchParams);
+		const searchParams = new URLSearchParams($page.url.searchParams);
 
-		if (currentCategory === categoryId) {
+		if ($currentCategory === categoryId) {
 			searchParams.delete('categoryId');
 		} else {
 			searchParams.set('categoryId', categoryId);
@@ -27,7 +23,7 @@
 	}
 
 	function showAll() {
-		const searchParams = new URLSearchParams(get(page).url.searchParams);
+		const searchParams = new URLSearchParams($page.url.searchParams);
 		searchParams.delete('categoryId');
 		goto(`?${searchParams.toString()}`);
 	}
@@ -45,7 +41,7 @@
 		<button
 			on:click={() => updateCategory(id)}
 			class={`flex items-center gap-x-2 rounded-full px-4 py-2 text-sm font-medium shadow-md transition-all duration-300 focus:outline-none ${
-				currentCategory === id
+				$currentCategory === id
 					? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 hover:shadow-lg'
 					: 'bg-white text-gray-700 hover:bg-gray-50 hover:shadow-lg'
 			}`}

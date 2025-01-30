@@ -115,3 +115,30 @@ export function formatTime(dateString: string): string {
 
 	return `${day}/${month}/${year}`;
 }
+export function timeAgo(timestamp: string): string {
+	const currentTime: Date = new Date();
+	const pastTime: Date = new Date(timestamp);
+
+	const timeDifference: number = currentTime.getTime() - pastTime.getTime();
+
+	const secondsAgo: number = Math.floor(timeDifference / 1000);
+	const minutesAgo: number = Math.floor(secondsAgo / 60);
+	const hoursAgo: number = Math.floor(minutesAgo / 60);
+	const daysAgo: number = Math.floor(hoursAgo / 24);
+	const monthsAgo: number = Math.floor(daysAgo / 30);
+	const yearsAgo: number = Math.floor(monthsAgo / 12);
+
+	if (yearsAgo > 0) {
+		return `${yearsAgo} year${yearsAgo !== 1 ? 's' : ''} ago`;
+	} else if (monthsAgo > 0) {
+		return `${monthsAgo} month${monthsAgo !== 1 ? 's' : ''} ago`;
+	} else if (daysAgo > 0) {
+		return `${daysAgo} day${daysAgo !== 1 ? 's' : ''} ago`;
+	} else if (hoursAgo > 0) {
+		return `${hoursAgo} hour${hoursAgo !== 1 ? 's' : ''} ago`;
+	} else if (minutesAgo > 0) {
+		return `${minutesAgo} minute${minutesAgo !== 1 ? 's' : ''} ago`;
+	} else {
+		return `${secondsAgo} second${secondsAgo !== 1 ? 's' : ''} ago`;
+	}
+}

@@ -38,7 +38,7 @@
 		let chdu = parseFloat(ch.duration);
 		return acc + chdu;
 	}, 0);
-
+	let showModal = false;
 	let userId = data?.user?.id;
 	let courseId = data.course.id;
 
@@ -114,6 +114,16 @@
 
 	function resetHover() {
 		hoverRating = 0;
+	}
+	function confirmUnsubscribe() {
+		showModal = true;
+	}
+
+	function handleModalAction(confirm: boolean) {
+		showModal = false;
+		if (confirm) {
+			unSubscribe();
+		}
 	}
 </script>
 
@@ -266,12 +276,36 @@
 					</div>
 					<div class="mt-4 sm:mt-0">
 						<button
-							on:click={unSubscribe}
-							class="flex items-center rounded-md bg-red-600 px-4 py-2 font-semibold text-white transition duration-300 hover:bg-red-700"
+							on:click={confirmUnsubscribe}
+							class="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
 						>
-							<X class="mr-2 h-5 w-5" />
 							Unsubscribe
 						</button>
+						<!-- Confirmation Modal -->
+						{#if showModal}
+							<div class=" fixed inset-0 flex items-center justify-center">
+								<div class="w-96 rounded-lg bg-white p-6 shadow-xl">
+									<h2 class="text-lg font-semibold">Confirm Unsubscription</h2>
+									<p class="mt-2 text-gray-600">
+										Are you sure you want to unsubscribe from this course?
+									</p>
+									<div class="mt-4 flex justify-end space-x-3">
+										<button
+											on:click={() => handleModalAction(false)}
+											class="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400"
+										>
+											Cancel
+										</button>
+										<button
+											on:click={() => handleModalAction(true)}
+											class="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
+										>
+											Unsubscribe
+										</button>
+									</div>
+								</div>
+							</div>
+						{/if}
 					</div>
 				{:else}
 					<div class="mt-4 sm:mt-0">
@@ -324,7 +358,7 @@
 					<Users class="mr-4 h-8 w-8 text-yellow-600" />
 					<div>
 						<span class="block text-lg font-semibold text-red-900"
-							>{courseDemo.enrolledStudents}</span
+							>{course.expand?.['subscriptions(course)']?.length}</span
 						>
 						<span class="text-sm text-red-700">Student</span>
 					</div>

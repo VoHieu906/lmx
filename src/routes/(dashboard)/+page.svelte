@@ -47,7 +47,7 @@
 		<section class="rounded-2xl bg-white p-8 shadow">
 			<h2 class="mb-6 text-2xl font-bold text-gray-800">🔥 Highest Rated Course</h2>
 
-			<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+			<div class="grid grid-cols-1 gap-16 md:grid-cols-2">
 				<!-- Course Image -->
 				<div class="relative">
 					<img
@@ -62,7 +62,7 @@
 				</div>
 
 				<!-- Course Details -->
-				<div class="flex flex-col justify-center space-y-2">
+				<div class="inline-flex max-w-max flex-col justify-center space-y-2">
 					<h3
 						class="bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 bg-clip-text text-xl font-extrabold uppercase tracking-wide text-transparent"
 					>
@@ -70,8 +70,7 @@
 					</h3>
 
 					<p
-						class="line-clamp-3 max-h-[4.5em] overflow-hidden text-[15px] italic
-           leading-relaxed text-gray-700 shadow-sm sm:line-clamp-4 sm:max-h-[6em]"
+						class="line-clamp-3 max-h-[4.5em] overflow-hidden text-[15px] italic leading-relaxed text-gray-700 shadow-sm sm:line-clamp-4 sm:max-h-[6em]"
 					>
 						"{highestRatedCourse?.description}"
 					</p>
@@ -82,7 +81,7 @@
 						📚 {highestRatedCourse?.expand?.category.name}
 					</span>
 
-					<div class="rounded-lg bg-gray-100 p-2 shadow-inner">
+					<div class="inline-flex flex-col rounded-lg bg-gray-100 p-2 shadow-inner">
 						<div class="flex items-center space-x-3 text-gray-700">
 							<span class="text-lg">👥</span>
 							<p class="text-sm font-medium">

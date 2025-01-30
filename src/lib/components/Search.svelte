@@ -44,7 +44,7 @@
 		on:input={handleInput}
 		on:keydown={handleKeyDown}
 		placeholder="Search for a course"
-		class="w-full rounded-full bg-slate-100 pl-9 md:w-[300px]"
+		class="w-full rounded border-none bg-slate-100 pl-9 md:w-[300px]"
 	/>
 
 	{#if isDropdownOpen && filteredCourses.length > 0}

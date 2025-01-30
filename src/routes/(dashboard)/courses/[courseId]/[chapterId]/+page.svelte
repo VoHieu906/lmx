@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { formatTime } from '$lib/utils';
+	import { formatTime, timeAgo } from '$lib/utils';
 	import { Files, Eye, CalendarClock, Reply } from 'lucide-svelte';
 	import { page } from '$app/stores';
 	import { get } from 'svelte/store';
@@ -105,9 +105,7 @@
 	}
 	let replyFormVisible: Record<string, boolean> = {};
 	let showCommentForm = false;
-	function toggleCommentForm() {
-		showCommentForm = !showCommentForm;
-	}
+
 	function toggleReplyForm(commentId: string) {
 		replyFormVisible[commentId] = !replyFormVisible[commentId];
 		// Force reactivity update
@@ -116,33 +114,39 @@
 </script>
 
 <div class="container mx-auto px-4 py-2">
-	<!-- Highlighted Title -->
-	<h2
-		class="rounded bg-gradient-to-r from-blue-100 to-blue-200 px-4 py-2 text-2xl font-bold text-gray-800 shadow-sm md:text-3xl"
-	>
-		{chapter?.expand?.course[0].title}
-	</h2>
-	<!-- Progress Bar -->
-	<div class="mt-4">
-		<div class="relative h-4 w-full rounded-full bg-gray-200">
-			<div
-				class={`absolute left-0 top-0 h-full rounded-full transition-all duration-300 ease-in-out ${getProgressColor(
-					progress
-				)}`}
-				style={`width: ${progress}%`}
-			></div>
-
-			<div
-				class="absolute inset-0 flex items-center justify-center text-sm font-medium text-white"
-				style="z-index: 10"
-			>
-				{progress}%
-			</div>
-		</div>
-	</div>
 	<div class="mt-2 flex flex-col gap-8 lg:flex-row">
 		<!-- Left Column -->
 		<div class="w-full rounded-lg bg-white p-2 shadow-md lg:w-2/3">
+			<!-- Title and Progress Bar -->
+			<div class="mb-4">
+				<!-- Highlighted Title -->
+				<h2
+					class="rounded bg-gradient-to-r from-blue-100 to-blue-200 px-4 py-2 text-2xl font-bold text-gray-800 shadow-sm md:text-3xl"
+				>
+					{chapter?.expand?.course[0].title}
+				</h2>
+
+				<!-- Progress Bar -->
+				<div class="mt-4">
+					<div class="relative h-4 w-full rounded-full bg-gray-200">
+						<div
+							class={`absolute left-0 top-0 h-full rounded-full transition-all duration-300 ease-in-out ${getProgressColor(
+								progress
+							)}`}
+							style={`width: ${progress}%`}
+						></div>
+
+						<div
+							class="absolute inset-0 flex items-center justify-center text-sm font-medium text-white"
+							style="z-index: 10"
+						>
+							{progress}%
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Video Player -->
 			<div class="overflow-hidden rounded-xl bg-gray-900 shadow-lg">
 				<div class="relative aspect-video">
 					<video
@@ -161,6 +165,7 @@
 				</div>
 			</div>
 
+			<!-- Chapter Details -->
 			<div class="mt-4 space-y-4">
 				<div class="flex justify-between">
 					<h2 class="text-xl font-bold text-gray-800 md:text-2xl">{chapter?.title}</h2>
@@ -179,6 +184,7 @@
 				<p class="text-base text-gray-600 md:text-lg">{chapter?.description}</p>
 			</div>
 
+			<!-- Attachments -->
 			<div class="mt-4">
 				{#if chapter?.expand?.['attachments(chapter)']}
 					<h2 class="text-lg font-bold text-gray-800 md:text-xl">Attachments:</h2>
@@ -192,6 +198,8 @@
 					{/each}
 				{/if}
 			</div>
+
+			<!-- Comment Section -->
 			<div class="mt-8">
 				<!-- Comment Form -->
 				<ChapterCommentForm data={data.chapterCommentForm} />
@@ -217,7 +225,7 @@
 							<div class="flex-1">
 								<div class="flex justify-between">
 									<p class="text-sm font-medium text-gray-700">{cmt?.expand?.user?.username}</p>
-									<p class="text-xs text-gray-500">1 hour ago</p>
+									<p class="text-xs text-gray-500">{timeAgo(cmt.created)}</p>
 								</div>
 								<p class="mt-1 text-gray-600">{cmt.content}</p>
 

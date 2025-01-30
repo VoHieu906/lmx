@@ -9,6 +9,7 @@ export type Course = RecordModel &
 			user: AuthModel;
 			'chapters(course)'?: Chapter[];
 			'purchase(course)'?: Purchase[];
+			'subscriptions(course)'?: Subscription[];
 		};
 	};
 export type Category = RecordModel & {
