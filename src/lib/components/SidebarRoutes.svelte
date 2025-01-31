@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { BookA, ChartNoAxesColumnIncreasing, Home, List } from 'lucide-svelte';
+	import { BookA, ChartNoAxesColumnIncreasing, Home, List, Settings } from 'lucide-svelte';
 	import SidebarItem from './SidebarItem.svelte';
 	import { page } from '$app/stores';
 
@@ -13,6 +13,11 @@
 			icon: BookA,
 			label: 'Courses',
 			href: '/search'
+		},
+		{
+			icon: Settings,
+			label: 'Settings',
+			href: '/settings'
 		}
 	];
 	const teacherRoutes = [
