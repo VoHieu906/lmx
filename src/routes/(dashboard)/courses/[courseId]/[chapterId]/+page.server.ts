@@ -106,8 +106,6 @@ export const load = async ({ params, locals: { user, pb } }) => {
 				};
 			});
 
-			console.log('Normalized comments:', normalizedComments);
-
 			// Group comments by parentComment
 			const groupedComments: { [key: string]: CommentWithReplies } = normalizedComments.reduce(
 				(acc, comment) => {

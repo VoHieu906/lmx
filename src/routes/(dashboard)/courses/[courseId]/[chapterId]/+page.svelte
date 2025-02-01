@@ -108,7 +108,7 @@
 
 	function toggleReplyForm(commentId: string) {
 		replyFormVisible[commentId] = !replyFormVisible[commentId];
-		// Force reactivity update
+
 		replyFormVisible = { ...replyFormVisible };
 	}
 </script>

@@ -1,12 +1,12 @@
-import { type Rating } from '$lib/type';
+import { type Course, type Rating } from '$lib/type';
 import { type RequestHandler } from '@sveltejs/kit';
 import { ClientResponseError } from 'pocketbase';
 
 interface RatingRequest {
 	userId: string;
 	courseId: string;
-	userRating: number; // Include the rating value in the request payload
-	comment?: string; // Optional comment field
+	userRating: number;
+	comment?: string;
 }
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -14,22 +14,18 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const { userId, courseId, userRating, comment }: RatingRequest = await request.json();
 
 	try {
-		// Fetch all ratings for the course
 		const ratings = await pb
 			.collection('ratings')
 			.getFullList<Rating>({ filter: `user = "${userId}" && course = "${courseId}"` });
 
-		// Check if a rating already exists for the user and course
 		const existingRating = ratings.length > 0 ? ratings[0] : null;
 
 		if (existingRating) {
-			// If a rating exists, update it
 			await pb.collection('ratings').update(existingRating.id, {
 				rating: userRating,
 				comment
 			});
 		} else {
-			// If no rating exists, create a new rating
 			await pb.collection('ratings').create({
 				user: userId,
 				course: courseId,
@@ -37,12 +33,18 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				comment
 			});
 		}
-
+		const course = await pb.collection('courses').getOne<Course>(courseId, { expand: 'user' });
+		await pb.collection('notifications').create<Notification>({
+			user: course?.expand?.user?.id,
+			message: 'Your course received a new rating!',
+			isRead: false
+		});
 		return new Response(
 			JSON.stringify({
 				success: true,
 				message: existingRating ? 'Rating updated successfully' : 'Rating created successfully',
 				rating: userRating,
+				// teacherId: course?.expand?.user?.id,
 				comment
 			}),
 			{

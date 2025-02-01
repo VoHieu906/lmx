@@ -98,14 +98,21 @@
 	function handleRating(selectedRating: number): void {
 		userRating = selectedRating;
 		rating = selectedRating;
-		// Optionally, you can send the rating to the backend immediately
+
 		let userRate = async () => {
-			await fetch('/api/rating', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ userId, courseId, userRating })
-			});
+			try {
+				const response = await fetch('/api/rating', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ userId, courseId, userRating })
+				});
+				// const data = await response.json();
+				// console.log('Response Data:', data);
+			} catch (error) {
+				console.error('Error submitting rating:', error);
+			}
 		};
+
 		userRate();
 	}
 

@@ -60,3 +60,8 @@ export type Rating = RecordModel & {
 	rating: number;
 	comment?: string;
 };
+export type Notification = RecordModel & {
+	user: string;
+	message: string;
+	isRead: boolean;
+};
