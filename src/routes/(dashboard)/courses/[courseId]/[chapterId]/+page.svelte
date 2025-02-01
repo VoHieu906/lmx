@@ -20,7 +20,7 @@
 	let userAvatarColor: string;
 	// Reactive block to handle page params
 	$: {
-		const { courseId, chapterId } = get(page).params;
+		const { courseId, chapterId } = $page.params;
 		if (courseId && chapterId) {
 			chapter = data.chapter;
 			course = data.course;

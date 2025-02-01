@@ -41,20 +41,20 @@
 			<Button
 				href="/"
 				size="sm"
-				class="flex w-full items-center gap-x-2 rounded-md bg-blue-600 py-3 pl-6 text-sm font-medium text-white transition-all hover:bg-blue-700"
+				class="flex w-full items-center gap-x-2 rounded-md bg-red-600 py-3 pl-6 text-sm font-medium text-white transition-all hover:bg-red-700"
 			>
 				<LucideMessageCircleQuestion class="size-4 text-white transition-all" />
-				<span class="ml-1">Student mode</span>
+				<span class="ml-1">Teacher mode</span>
 			</Button>
 		{:else}
 			<!-- Updated Teacher Mode Button -->
 			<Button
 				size="sm"
 				href="/teacher/courses"
-				class="flex w-full items-center gap-x-2 rounded-md bg-red-600 py-3 pl-6 text-sm font-medium text-white transition-all hover:bg-red-700"
+				class="flex w-full items-center gap-x-2 rounded-md bg-blue-600 py-3 pl-6 text-sm font-medium text-white transition-all hover:bg-blue-700"
 			>
 				<PersonStandingIcon class="size-4 text-white transition-all" />
-				<span class="ml-1">Teacher mode</span>
+				<span class="ml-1"> Student mode</span>
 			</Button>
 		{/if}
 
