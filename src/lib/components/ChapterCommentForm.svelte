@@ -11,7 +11,6 @@
 	const form = superForm(data, {
 		validators: zodClient(chapterCommentSchema)
 	});
-
 	const { form: formData, delayed } = form;
 	let submitting = false;
 	let fileInput: HTMLInputElement | null = null;
@@ -27,6 +26,9 @@
 		// Include parentId if replying to a comment
 		if (parentId) {
 			formData.append('parentId', parentId);
+		}
+		if (uploadedFile) {
+			formData.append('file', uploadedFile);
 		}
 
 		try {

@@ -135,11 +135,10 @@ export const load = async ({ params, locals: { user, pb } }) => {
 		}
 	}
 
-	const [chapter, course, subscription, comment] = await Promise.all([
+	const [chapter, course, subscription] = await Promise.all([
 		getChapter(),
 		getCourse(),
-		getSubscription(),
-		getComment()
+		getSubscription()
 	]);
 
 	const chapterCommentForm = await superValidate(zod(chapterCommentSchema));
@@ -147,10 +146,10 @@ export const load = async ({ params, locals: { user, pb } }) => {
 	return {
 		chapter,
 		course,
+
 		subscription,
 		isSubscribed: !!subscription,
-		chapterCommentForm,
-		comment
+		chapterCommentForm
 	};
 };
 
@@ -166,13 +165,11 @@ export const actions = {
 
 		const chapter = await pb.collection('chapters').getOne<Chapter>(chapterId);
 
-		const courseId = chapter.course[0];
+		const course = await pb
+			.collection('courses')
+			.getOne<Course>(chapter.course[0], { expand: 'user' });
 
-		const course = await pb.collection('courses').getOne<Course>(courseId, { expand: 'user' });
-
-		const teacher = course.expand?.user;
-		const teacherName = teacher?.username;
-		console.log(teacherName);
+		const teacherName = course.expand?.user?.username;
 
 		const formData = await request.formData();
 
@@ -184,7 +181,7 @@ export const actions = {
 		}
 
 		const file = formData.get('file') as File | null;
-
+		console.log('file:', file);
 		const commentData: any = {
 			user: user?.id,
 			chapter: chapterId,

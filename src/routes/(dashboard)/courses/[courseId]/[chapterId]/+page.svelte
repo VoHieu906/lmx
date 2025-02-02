@@ -1,42 +1,39 @@
 <script lang="ts">
-	import { formatTime, timeAgo } from '$lib/utils';
-	import { Files, Eye, CalendarClock, Reply } from 'lucide-svelte';
+	import { formatTime } from '$lib/utils';
+	import { Files, Eye, CalendarClock } from 'lucide-svelte';
 	import { page } from '$app/stores';
-	import { get } from 'svelte/store';
 	import type { Chapter, Comment, Course } from '$lib/type.js';
 	import { toast } from 'svelte-sonner';
 	import ChapterCommentForm from '$lib/components/ChapterCommentForm.svelte';
-	import { getRandomColor } from '$lib/actions/getRandomColor.js';
-	import { onMount } from 'svelte';
 	import ChapterVideoCard from '$lib/components/chapterVideoCard.svelte';
 	import { getProgressColor } from '$lib/actions/getProgressColor.js';
+	import { commentsStore } from '$lib/stores/commentsStore.js';
+	import CommentList from '$lib/components/CommentList.svelte';
 
 	export let data;
 
 	let chapter: Chapter | undefined;
 	let course: Course | undefined;
 	let otherChapters: Chapter[] = [];
-	let comments: Comment[] | undefined = [];
-	let userAvatarColor: string;
+	let comments: Comment[] = [];
+
 	// Reactive block to handle page params
 	$: {
 		const { courseId, chapterId } = $page.params;
 		if (courseId && chapterId) {
 			chapter = data.chapter;
 			course = data.course;
-			comments = data.comment;
 			otherChapters = course?.expand?.['chapters(course)'] || [];
+			commentsStore.init(chapterId);
 		}
-		console.log(course);
+	}
+	const { subscribe } = commentsStore;
+	$: {
+		subscribe((newComments) => {
+			comments = newComments;
+		});
 	}
 
-	onMount(() => {
-		const storedColor = localStorage.getItem('userAvatarColor');
-		userAvatarColor = storedColor || getRandomColor();
-		if (!storedColor) {
-			localStorage.setItem('userAvatarColor', userAvatarColor);
-		}
-	});
 	let progress = data.subscription?.progress ?? 0;
 	let completedChapters = data.subscription?.completedChapters ?? [];
 
@@ -102,14 +99,6 @@
 		} catch (e) {
 			console.log('Error updating view count ');
 		}
-	}
-	let replyFormVisible: Record<string, boolean> = {};
-	let showCommentForm = false;
-
-	function toggleReplyForm(commentId: string) {
-		replyFormVisible[commentId] = !replyFormVisible[commentId];
-
-		replyFormVisible = { ...replyFormVisible };
 	}
 </script>
 
@@ -207,59 +196,7 @@
 				<!-- Display Comments -->
 				<div class="mt-6 space-y-4">
 					{#each comments || [] as cmt}
-						<div class="flex space-x-4 rounded-lg py-4">
-							{#if cmt?.expand?.user?.avatar}
-								<img
-									src={cmt?.expand?.user?.avatar}
-									alt="User Avatar"
-									class="h-10 w-10 rounded-full"
-								/>
-							{:else}
-								<div
-									class={`flex h-10 w-10 items-center justify-center rounded-full font-medium text-white ${userAvatarColor}`}
-								>
-									{cmt?.expand?.user?.username ? cmt?.expand?.user?.username[0].toUpperCase() : '?'}
-								</div>
-							{/if}
-
-							<div class="flex-1">
-								<div class="flex justify-between">
-									<p class="text-sm font-medium text-gray-700">{cmt?.expand?.user?.username}</p>
-									<p class="text-xs text-gray-500">{timeAgo(cmt.created)}</p>
-								</div>
-								<p class="mt-1 text-gray-600">{cmt.content}</p>
-
-								{#if cmt.file}
-									<div
-										class="flex w-[20%] items-center rounded border border-sky-200 bg-sky-100 p-2"
-									>
-										<Files class="m-1 size-4 flex-shrink-0" />
-										<p class="line-clamp-1 text-xs">{cmt.file}</p>
-									</div>
-								{/if}
-
-								<div class="mt-2 flex space-x-4 text-sm text-gray-500">
-									<button class="hover:text-blue-500">Like</button>
-									<button class="hover:text-blue-500" on:click={() => toggleReplyForm(cmt.id)}
-										><Reply /></button
-									>
-								</div>
-
-								<!-- Show Reply Form when replyFormVisible[cmt.id] is true -->
-								{#if replyFormVisible[cmt.id]}
-									<div class=" mt-4">
-										<ChapterCommentForm data={data.chapterCommentForm} parentId={cmt.id} />
-									</div>
-								{/if}
-
-								<!-- Recursive Display of Replies -->
-								{#if cmt.replies}
-									<div class="ml-12 mt-4 border-l-2 border-gray-300 pl-4">
-										{cmt.replies}
-									</div>
-								{/if}
-							</div>
-						</div>
+						<CommentList {cmt} />
 					{/each}
 				</div>
 			</div>

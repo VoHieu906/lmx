@@ -26,12 +26,13 @@
 	// 		console.error(err);
 	// 	});
 	// }
-
 	onMount(() => {
-		notificationsStore.init().catch((err) => {
-			error = 'Failed to load notifications. Please refresh the page.';
-			console.error(err);
-		});
+		if ($userStore?.id) {
+			notificationsStore.init($userStore?.id).catch((err) => {
+				error = 'Failed to load notifications. Please refresh the page.';
+				console.error(err);
+			});
+		}
 	});
 </script>
 
