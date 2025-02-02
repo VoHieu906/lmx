@@ -1,11 +1,10 @@
-// src/hooks.server.js
 import { redirect } from '@sveltejs/kit';
-import PocketBase from 'pocketbase';
+import pb from '$lib/pocketbase'; // Import the shared PocketBase instance
 
 /** @type {import('@sveltejs/kit').Handle} */
 export async function handle({ event, resolve }) {
 	const { locals, request, url } = event;
-	locals.pb = new PocketBase('http://127.0.0.1:8090');
+	locals.pb = pb; // Use the existing instance from `lib/pocketbase`
 
 	// load the store data from the request cookie string
 	locals.pb.authStore.loadFromCookie(request.headers.get('cookie') || '');
@@ -19,6 +18,7 @@ export async function handle({ event, resolve }) {
 		locals.pb.authStore.clear();
 		locals.user = undefined;
 	}
+
 	if (
 		url.pathname.startsWith('/') &&
 		!locals.user &&
@@ -26,6 +26,7 @@ export async function handle({ event, resolve }) {
 	) {
 		redirect(303, '/login');
 	}
+
 	const response = await resolve(event);
 
 	// send back the default 'pb_auth' cookie to the client with the latest store state

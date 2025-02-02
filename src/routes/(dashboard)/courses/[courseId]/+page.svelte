@@ -42,7 +42,6 @@
 	let showModal = false;
 	let userId = data?.user?.id;
 	let courseId = data.course.id;
-	console.log(course);
 	async function subscribe() {
 		try {
 			const res = await fetch('/api/subscribe', {
@@ -101,13 +100,14 @@
 
 		let userRate = async () => {
 			try {
-				const response = await fetch('/api/rating', {
+				const res = await fetch('/api/rating', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({ userId, courseId, userRating })
 				});
-				// const data = await response.json();
-				// console.log('Response Data:', data);
+				if (res.ok) {
+					toast.success('Rating successfully');
+				}
 			} catch (error) {
 				console.error('Error submitting rating:', error);
 			}

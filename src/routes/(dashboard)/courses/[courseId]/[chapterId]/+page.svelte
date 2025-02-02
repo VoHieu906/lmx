@@ -27,7 +27,7 @@
 			comments = data.comment;
 			otherChapters = course?.expand?.['chapters(course)'] || [];
 		}
-		console.log(comments);
+		console.log(course);
 	}
 
 	onMount(() => {
@@ -123,7 +123,7 @@
 				<h2
 					class="rounded bg-gradient-to-r from-blue-100 to-blue-200 px-4 py-2 text-2xl font-bold text-gray-800 shadow-sm md:text-3xl"
 				>
-					{chapter?.expand?.course[0].title}
+					{chapter?.expand?.course?.[0].title}
 				</h2>
 
 				<!-- Progress Bar -->

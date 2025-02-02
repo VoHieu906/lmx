@@ -4,7 +4,6 @@
 
 	export let data;
 	let { course, highestRatedCourse, freeCourses, paidCourses, subscribedCourses } = data;
-	console.log(course);
 </script>
 
 <div>

@@ -1,3 +1,4 @@
+import { createNotification } from '$lib/actions/createNotification.js';
 import { chapterCommentSchema } from '$lib/schema.js';
 import { type Subscription, type Chapter, type Course, type Comment } from '$lib/type';
 import { redirect } from '@sveltejs/kit';
@@ -163,7 +164,16 @@ export const actions = {
 
 		const { chapterId } = params;
 
-		// Get the form data once and work with it
+		const chapter = await pb.collection('chapters').getOne<Chapter>(chapterId);
+
+		const courseId = chapter.course[0];
+
+		const course = await pb.collection('courses').getOne<Course>(courseId, { expand: 'user' });
+
+		const teacher = course.expand?.user;
+		const teacherName = teacher?.username;
+		console.log(teacherName);
+
 		const formData = await request.formData();
 
 		const commentContent = formData.get('comment') as string | null;
@@ -182,23 +192,25 @@ export const actions = {
 		};
 
 		if (parentComment) {
-			commentData.parentComment = parentComment; // Include parentId if replying to a comment
+			commentData.parentComment = parentComment;
 		}
-		console.log(commentData);
+
 		if (file && file.size > 0) {
 			commentData.file = file;
-			console.log('File attached to comment: ', file);
 		}
 
 		try {
-			// Create the comment in the database (with or without file)
 			await pb.collection('comments').create(commentData);
-
+			await createNotification(
+				course?.expand?.user?.id,
+				'Some one has comment on your chapter 1s ago!',
+				` ${teacherName} commented on your chapter ${chapter.title} 1s ago `
+			);
 			return {
 				message: 'Comment created successfully!'
 			};
 		} catch (e) {
-			console.error('Error creating comment: ', e); // Log error for debugging
+			console.error('Error creating comment: ', e);
 			return fail(500, {
 				message: 'Failed to create comment. Please try again.'
 			});

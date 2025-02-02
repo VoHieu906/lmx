@@ -32,8 +32,9 @@ export type Chapter = RecordModel & {
 	isFree: boolean;
 	course: string;
 	view?: number;
-	expand?: {
-		'attachments(chapter)'?: Attachment[];
+	expand: {
+		'attachments(chapter)': Attachment[];
+		course: Course;
 	};
 };
 
@@ -62,6 +63,7 @@ export type Rating = RecordModel & {
 };
 export type Notification = RecordModel & {
 	user: string;
-	message: string;
+	sMessage: string;
+	lMessage?: string;
 	isRead: boolean;
 };

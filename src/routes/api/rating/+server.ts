@@ -1,3 +1,4 @@
+import { createNotification } from '$lib/actions/createNotification';
 import { type Course, type Rating } from '$lib/type';
 import { type RequestHandler } from '@sveltejs/kit';
 import { ClientResponseError } from 'pocketbase';
@@ -33,18 +34,21 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				comment
 			});
 		}
+
 		const course = await pb.collection('courses').getOne<Course>(courseId, { expand: 'user' });
-		await pb.collection('notifications').create<Notification>({
-			user: course?.expand?.user?.id,
-			message: 'Your course received a new rating!',
-			isRead: false
-		});
+		const user = await pb.collection('users').getOne(userId);
+		const username = user.username;
+		await createNotification(
+			course?.expand?.user?.id,
+			'Your course received a new rating!',
+			`Your course: ${course.title} has been rated ${userRating} stars by ${username}! `
+		);
+
 		return new Response(
 			JSON.stringify({
 				success: true,
 				message: existingRating ? 'Rating updated successfully' : 'Rating created successfully',
 				rating: userRating,
-				// teacherId: course?.expand?.user?.id,
 				comment
 			}),
 			{

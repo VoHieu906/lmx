@@ -1,6 +1,11 @@
 <script lang="ts">
 	import Navbar from '$lib/components/Navbar.svelte';
 	import Sidebar from '$lib/components/Sidebar.svelte';
+	import { userStore } from '$lib/stores/authStore.js';
+
+	export let data;
+	let { userInfo } = data;
+	userStore.set(userInfo || null);
 </script>
 
 <div class="h-full">

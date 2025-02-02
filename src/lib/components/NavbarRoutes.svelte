@@ -8,12 +8,31 @@
 	import { enhance } from '$app/forms';
 	import { LucideMessageCircleQuestion, PersonStandingIcon } from 'lucide-svelte';
 
+	import { userStore } from '$lib/stores/authStore.js';
+
+	import { markAsRead, notificationsStore } from '$lib/stores/notificationsStore';
+	import { onMount } from 'svelte';
+
 	$: pathname = $page.url.pathname;
 	$: isTeacherPage = pathname?.startsWith('/teacher');
 	$: isPlayerPage = pathname?.includes('chapter');
 
-	// Simulated unread messages count
-	let unreadMessages = 3;
+	$: unreadMessages = $notificationsStore.filter((item) => !item.isRead).length;
+	let error = '';
+
+	// function handleMarkAsRead(notification: Notification) {
+	// 	markAsRead(notification.id).catch((err) => {
+	// 		error = 'Failed to mark notification as read. Please try again.';
+	// 		console.error(err);
+	// 	});
+	// }
+
+	onMount(() => {
+		notificationsStore.init().catch((err) => {
+			error = 'Failed to load notifications. Please refresh the page.';
+			console.error(err);
+		});
+	});
 </script>
 
 <div
@@ -37,10 +56,10 @@
 			</Avatar.Root>
 			<div class="flex min-w-0 flex-col">
 				<p class="truncate text-sm font-medium text-slate-700 transition-all hover:text-primary">
-					John Doe with a Very Long Name
+					{$userStore?.username}
 				</p>
 				<p class="truncate text-xs text-muted-foreground">
-					john.doe.with.a.very.long.email@example.com
+					{$userStore?.email}
 				</p>
 			</div>
 		</div>
@@ -49,7 +68,7 @@
 		<div class="relative ml-4 flex-shrink-0">
 			<Tooltip.Root>
 				<Tooltip.Trigger>
-					<button
+					<div
 						class="relative appearance-none border-none bg-transparent p-0"
 						aria-label="Notifications"
 					>
@@ -62,21 +81,21 @@
 								{unreadMessages}
 							</span>
 						{/if}
-					</button>
+					</div>
 				</Tooltip.Trigger>
 				<Tooltip.Content
 					side="right"
 					sideOffset={5}
-					class="duration-50 z-50 min-w-[200px] rounded-md border border-gray-500 bg-white p-3 shadow-xl"
+					class="duration-50 z-50 min-w-[12rem] rounded-md border border-gray-500 bg-white p-2 shadow-xl"
 				>
 					<div class=" text-gray-800">
 						<p class="mb-1 font-semibold">Unread Messages:</p>
 						<ul class="list-disc pl-4">
-							<li>
-								<a href="/">New course available</a>
-							</li>
-							<li>Assignment due tomorrow</li>
-							<li>Grade updated</li>
+							{#each $notificationsStore as item}
+								<li>
+									<a href="/">{item.sMessage}</a>
+								</li>
+							{/each}
 						</ul>
 					</div>
 				</Tooltip.Content>
