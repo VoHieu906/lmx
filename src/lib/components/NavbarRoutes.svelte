@@ -11,7 +11,7 @@
 	import { userStore } from '$lib/stores/authStore.js';
 
 	import { markAsRead, notificationsStore } from '$lib/stores/notificationsStore';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 
 	$: pathname = $page.url.pathname;
 	$: isTeacherPage = pathname?.startsWith('/teacher');
@@ -27,12 +27,13 @@
 	// 	});
 	// }
 	onMount(() => {
-		if ($userStore?.id) {
-			notificationsStore.init($userStore?.id).catch((err) => {
-				error = 'Failed to load notifications. Please refresh the page.';
-				console.error(err);
-			});
-		}
+		notificationsStore.init().catch((err) => {
+			error = 'Failed to load notifications. Please refresh the page.';
+			console.error(err);
+		});
+		onDestroy(async () => {
+			await notificationsStore.unsubscribe(); // Await the unsubscribe promise
+		});
 	});
 </script>
 

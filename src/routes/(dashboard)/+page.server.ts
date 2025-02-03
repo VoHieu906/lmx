@@ -1,5 +1,3 @@
-import { userStore } from '$lib/stores/authStore';
-import { notificationsStore } from '$lib/stores/notificationsStore';
 import { type Course } from '$lib/type.js';
 import { redirect } from '@sveltejs/kit';
 
@@ -116,7 +114,7 @@ export const actions = {
 		const {
 			locals: { pb }
 		} = event;
-		userStore.set(null);
+
 		pb.authStore.clear();
 	}
 };
