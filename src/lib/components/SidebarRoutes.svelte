@@ -1,5 +1,12 @@
 <script lang="ts">
-	import { BookA, ChartNoAxesColumnIncreasing, Home, List, Settings } from 'lucide-svelte';
+	import {
+		BookA,
+		ChartNoAxesColumnIncreasing,
+		Home,
+		IceCreamBowl,
+		List,
+		Settings
+	} from 'lucide-svelte';
 	import SidebarItem from './SidebarItem.svelte';
 	import { page } from '$app/stores';
 
@@ -13,6 +20,11 @@
 			icon: BookA,
 			label: 'Courses',
 			href: '/search'
+		},
+		{
+			icon: IceCreamBowl,
+			label: 'Achievements',
+			href: '/achievements'
 		},
 		{
 			icon: Settings,
