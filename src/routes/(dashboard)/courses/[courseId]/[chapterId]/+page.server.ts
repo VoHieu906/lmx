@@ -201,7 +201,7 @@ export const actions = {
 			await createNotification(
 				course?.expand?.user?.id,
 				'Some one has comment on your chapter 1s ago!',
-				` ${teacherName} commented on your chapter ${chapter.title} 1s ago `
+				` ${user?.username} commented on your chapter ${chapter.title} 1s ago `
 			);
 			return {
 				message: 'Comment created successfully!'

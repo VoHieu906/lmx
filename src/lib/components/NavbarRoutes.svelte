@@ -74,7 +74,8 @@
 						class="relative appearance-none border-none bg-transparent p-0"
 						aria-label="Notifications"
 					>
-						<Bell class="size-6 text-slate-600" />
+						<a href="/notifications"><Bell class="size-6 text-slate-600" /></a>
+
 						{#if unreadMessages > 0}
 							<span
 								class="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-red-500 text-xs text-white"

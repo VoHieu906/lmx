@@ -39,7 +39,7 @@ function createNotificationStore() {
 					unsubscribe = await pb.collection('notifications').subscribe('*', (e) => {
 						const currentUserId = get(userStore)?.id; // Get the latest userId from userStore
 
-						console.log('e.record.user:', e.record.user);
+						// console.log('e.record.user:', e.record.user);
 						// console.log('currentUserId:', currentUserId);
 
 						if (e.record.user === currentUserId) {
