@@ -67,3 +67,20 @@ export type Notification = RecordModel & {
 	lMessage?: string;
 	isRead: boolean;
 };
+export type Achievement = RecordModel & {
+	title: string;
+	description: string;
+	type: 'single' | 'progress';
+	max_progress: number;
+	icon: string;
+};
+export type UserAchievement = RecordModel & {
+	user: string;
+	achievement: string;
+	progress: number;
+	unlocked: boolean;
+	expand: {
+		user: AuthModel;
+		achievement: Achievement[];
+	};
+};

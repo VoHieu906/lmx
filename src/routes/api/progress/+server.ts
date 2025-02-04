@@ -1,3 +1,4 @@
+import { checkAchievement } from '$lib/actions/checkAchivement';
 import { json, type RequestHandler } from '@sveltejs/kit';
 import { ClientResponseError } from 'pocketbase';
 
@@ -18,7 +19,7 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
 		const completedChapters = Array.isArray(subscription.completedChapters)
 			? subscription.completedChapters
 			: [];
-		console.log(completedChapters);
+
 		if (completedChapters.includes(chapterId)) {
 			return json({ success: true, message: 'chapter already completed' }, { status: 200 });
 		}
@@ -28,6 +29,7 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
 			? course.expand['chapters(course)'].length
 			: 0;
 		const progress = Math.round((completedChapters.length / totalChapters) * 100);
+		await checkAchievement(userId, 'First steps');
 		await pb.collection('subscriptions').update(subscription.id, {
 			completedChapters,
 			progress

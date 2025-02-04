@@ -1,3 +1,4 @@
+import { checkAchievement } from '$lib/actions/checkAchivement';
 import { createNotification } from '$lib/actions/createNotification';
 import { type Course, type Rating } from '$lib/type';
 import { type RequestHandler } from '@sveltejs/kit';
@@ -38,6 +39,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const course = await pb.collection('courses').getOne<Course>(courseId, { expand: 'user' });
 		const user = await pb.collection('users').getOne(userId);
 		const username = user.username;
+		await checkAchievement(userId, 'Lord of Judgment');
 		await createNotification(
 			course?.expand?.user?.id,
 			'Your course received a new rating!',

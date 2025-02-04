@@ -1,3 +1,4 @@
+import { checkAchievement } from '$lib/actions/checkAchivement.js';
 import { createNotification } from '$lib/actions/createNotification.js';
 import { chapterCommentSchema } from '$lib/schema.js';
 import { type Subscription, type Chapter, type Course, type Comment } from '$lib/type';
@@ -169,8 +170,6 @@ export const actions = {
 			.collection('courses')
 			.getOne<Course>(chapter.course[0], { expand: 'user' });
 
-		const teacherName = course.expand?.user?.username;
-
 		const formData = await request.formData();
 
 		const commentContent = formData.get('comment') as string | null;
@@ -181,7 +180,7 @@ export const actions = {
 		}
 
 		const file = formData.get('file') as File | null;
-		console.log('file:', file);
+
 		const commentData: any = {
 			user: user?.id,
 			chapter: chapterId,
@@ -198,6 +197,7 @@ export const actions = {
 
 		try {
 			await pb.collection('comments').create(commentData);
+			await checkAchievement('God of communication');
 			await createNotification(
 				course?.expand?.user?.id,
 				'Some one has comment on your chapter 1s ago!',

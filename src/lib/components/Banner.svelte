@@ -39,7 +39,7 @@
 <section class="relative overflow-hidden rounded-2xl">
 	<!-- Banner Image -->
 	<div class="relative h-64 w-full">
-		<img src={images[currentBannerIndex]} alt="Banner image" class="h-full w-full object-cover" />
+		<img src={images[currentBannerIndex]} alt="Banner " class="h-full w-full object-cover" />
 	</div>
 
 	<!-- Arrows for Navigation -->

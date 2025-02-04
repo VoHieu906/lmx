@@ -34,17 +34,17 @@ export const load = async ({ params, locals: { user, pb } }) => {
 	}
 	async function getRating() {
 		try {
-			const rating = await pb
-				.collection('ratings')
-				.getFirstListItem<Rating>(`user = "${userId}" && course = "${courseId}"`);
+			const ratings = await pb.collection('ratings').getFullList<Rating>({
+				filter: `user = "${userId}" && course = "${courseId}"`
+			});
 
-			if (!rating) {
+			if (!ratings.length) {
 				return 0;
 			}
 
-			return rating.rating; // Assuming you want the rating value, not the entire object
+			return ratings[0].rating;
 		} catch (e) {
-			console.log('Error fetching rating:', e);
+			console.log('Error while fetching ratings:', e);
 			return 0;
 		}
 	}
