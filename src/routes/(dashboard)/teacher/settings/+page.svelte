@@ -1,4 +1,5 @@
 <script>
 	import { goto } from '$app/navigation';
-	goto('/settings/profile');
+
+	goto('/teacher/settings/profile');
 </script>

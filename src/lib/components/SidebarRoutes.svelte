@@ -25,11 +25,6 @@
 			icon: IceCreamBowl,
 			label: 'Achievements',
 			href: '/achievements'
-		},
-		{
-			icon: Settings,
-			label: 'Settings',
-			href: '/settings'
 		}
 	];
 	const teacherRoutes = [
@@ -42,6 +37,11 @@
 			icon: ChartNoAxesColumnIncreasing,
 			label: 'Analytics',
 			href: '/teacher/analytics'
+		},
+		{
+			icon: Settings,
+			label: 'Settings',
+			href: '/teacher/settings'
 		}
 	];
 	$: pathname = $page.url.pathname;
