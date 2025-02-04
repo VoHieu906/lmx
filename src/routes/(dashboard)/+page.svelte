@@ -84,7 +84,11 @@
 						<div class="flex items-center space-x-3 text-gray-700">
 							<span class="text-lg">👥</span>
 							<p class="text-sm font-medium">
-								<strong>{highestRatedCourse?.subscribers}</strong> Students Enrolled
+								<strong
+									>{highestRatedCourse?.expand?.['subscriptions(course)']
+										? highestRatedCourse?.expand?.['subscriptions(course)']?.length
+										: 0}</strong
+								> Students Enrolled
 							</p>
 						</div>
 						<div class="mt-2 flex items-center space-x-3 text-gray-700">

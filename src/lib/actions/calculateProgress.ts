@@ -12,7 +12,6 @@ export function calculateProgress(user: any, achievement: Achievement) {
 			console.log('Comment time:', user.expand?.['comments(user)']?.length);
 			return Math.min(user.expand?.['comments(user)']?.length || 0, 50);
 		case 'Lord of Judgment':
-			console.log('Rating time: ', Math.min(user.expand?.['ratings(user)']?.length || 0, 5));
 			return Math.min(user.expand?.['ratings(user)']?.length || 0, 5);
 		default:
 			console.log("Can't find title");

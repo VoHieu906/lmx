@@ -18,7 +18,7 @@ export const load = async ({ locals }) => {
 		try {
 			if (userId) {
 				const user = await pb.collection('users').getOne(userId, {
-					expand: 'subscriptions(user).course,ratings(user)'
+					expand: 'subscriptions(user).course,ratings(user), comments(user)'
 				});
 				return user;
 			}

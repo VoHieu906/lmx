@@ -41,7 +41,6 @@ export async function checkAchievement(userId: string, achievementTitle: string)
 					await pb
 						.collection('user_achievements')
 						.update(userAchievement.id, { progress, unlocked });
-					console.log('Update exist achievement');
 				}
 			} else {
 				await pb.collection('user_achievements').create({
@@ -50,7 +49,6 @@ export async function checkAchievement(userId: string, achievementTitle: string)
 					progress,
 					unlocked
 				});
-				console.log('created new Achievement!');
 			}
 			return { ...achievement, progress, unlocked };
 		}

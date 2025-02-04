@@ -161,7 +161,7 @@ export const actions = {
 			params,
 			request
 		} = event;
-
+		const userId = user?.id;
 		const { chapterId } = params;
 
 		const chapter = await pb.collection('chapters').getOne<Chapter>(chapterId);
@@ -197,7 +197,10 @@ export const actions = {
 
 		try {
 			await pb.collection('comments').create(commentData);
-			await checkAchievement('God of communication');
+			if (userId) {
+				await checkAchievement(userId, 'God of communication');
+			}
+
 			await createNotification(
 				course?.expand?.user?.id,
 				'Some one has comment on your chapter 1s ago!',

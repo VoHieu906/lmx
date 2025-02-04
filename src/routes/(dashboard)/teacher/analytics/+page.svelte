@@ -22,7 +22,12 @@
 	}, 0);
 
 	let totalSubscribers = course?.reduce((subAcc, sub) => {
-		return subAcc + (sub?.subscribers ? sub?.subscribers : 0);
+		return (
+			subAcc +
+			(sub?.expand?.['subscriptions(course)']?.length
+				? sub?.expand?.['subscriptions(course)']?.length
+				: 0)
+		);
 	}, 0);
 
 	let totalCourse = course?.length;
@@ -52,7 +57,7 @@
 	let selectedCourse = course?.[0]?.title || '';
 
 	// Calculate total views for each course
-	const calculateTotalViewsForCourse = (course) => {
+	const calculateTotalViewsForCourse = (course: Course) => {
 		return (
 			course.expand?.['chapters(course)']?.reduce(
 				(total: number, chapter: Chapter) => total + (chapter.views || 0),

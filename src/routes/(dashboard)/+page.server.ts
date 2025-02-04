@@ -9,7 +9,7 @@ export const load = async ({ locals: { user, pb } }) => {
 	async function getCourse() {
 		try {
 			const courses = await pb.collection<Course>('courses').getFullList({
-				expand: 'ratings(course), category, chapters(course)',
+				expand: 'ratings(course), category, chapters(course), subscriptions(course)',
 				filter: 'isPublished = true',
 				sort: '-created'
 			});
