@@ -54,7 +54,7 @@
 		</nav>
 
 		<!-- Main Content -->
-		<main class="flex-1 rounded-lg bg-white p-6 shadow">
+		<main class="flex-1 rounded-lg">
 			<slot />
 		</main>
 	</div>

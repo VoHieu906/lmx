@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Banner from '$lib/components/Banner.svelte';
 	import CourseCard from '$lib/components/CourseCard.svelte';
+	import UserSlider from '$lib/components/UserSlider.svelte';
 
 	export let data;
 	let { course, highestRatedCourse, freeCourses, paidCourses, subscribedCourses } = data;
@@ -147,6 +148,10 @@
 					/>
 				{/each}
 			</div>
+		</section>
+		<section class="rounded-2xl bg-white p-6 shadow">
+			<h2 class="mb-4 text-xl font-bold">Teacher at LMX</h2>
+			<UserSlider />
 		</section>
 	</main>
 </div>

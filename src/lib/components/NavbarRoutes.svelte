@@ -45,11 +45,14 @@
 		<!-- User Info Column -->
 		<div class="flex min-w-0 flex-1 items-center gap-x-2">
 			<Avatar.Root>
-				<Avatar.Image
-					class="size-8 flex-shrink-0 rounded-full border border-muted sm:size-10"
-					src="https://github.com/shadcn.png"
-					alt="@shadcn"
-				/>
+				<a href="/{$userStore?.id}">
+					<Avatar.Image
+						class="size-8 flex-shrink-0 rounded-full border border-muted sm:size-10"
+						src="https://github.com/shadcn.png"
+						alt="@shadcn"
+					/>
+				</a>
+
 				<Avatar.Fallback
 					class="flex size-6 flex-shrink-0 items-center justify-center rounded-full bg-muted sm:size-8"
 				>

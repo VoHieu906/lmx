@@ -4,191 +4,354 @@
 </script>
 
 <div class="banner-container">
+	<div class="pole">
+		<div class="pole-top"></div>
+		<div class="pole-body"></div>
+	</div>
 	<div
 		class={`banner ${achievement.unlocked ? 'unlocked' : ''}`}
-		style={`border-color: ${achievement.unlocked ? '#10B981' : '#8B5CF6'}`}
+		style={`background: ${achievement.unlocked ? '#10B981' : '#8B5CF6'}`}
 	>
-		<!-- Achievement Badge -->
-
-		<!-- Status Indicator -->
-		<div
-			class="status-indicator"
-			style={`background: ${achievement.unlocked ? '#10B981' : '#8B5CF6'}`}
-		>
-			<span>{achievement.unlocked ? 'Unlocked' : 'Locked'}</span>
-		</div>
-
-		<!-- Title and Description -->
 		<div class="banner-content">
-			<!-- ICON (INSIDE with circle ring) -->
-			<div class="icon-container">
-				<div class="icon-ring">
-					<span class="text-3xl">{achievement.expand?.achievement.icon}</span>
+			<div class="achievement-medal">
+				<div class="medal-ring"></div>
+				<div class="icon-container">
+					<span class="icon">{achievement.expand?.achievement.icon}</span>
 				</div>
 			</div>
 
+			<div class="ribbon left"></div>
+			<div class="ribbon right"></div>
+
 			<h2 class="title">{achievement.expand?.achievement.title}</h2>
+			<div class="separator">
+				<div class="line"></div>
+				<div class="diamond"></div>
+				<div class="line"></div>
+			</div>
 			<p class="description">{achievement.expand?.achievement.description}</p>
 
-			<!-- Decorative Line -->
-			<div class="decorative-line"></div>
+			<div class="progress-section">
+				<div class="progress-text">
+					<span class="progress-value">{progress}%</span>
+					<span class="progress-label">Complete</span>
+				</div>
+				<div class="progress-bar">
+					<div
+						class="progress-fill"
+						style={`width: ${progress}%; background: ${achievement.unlocked ? '#ffffff' : '#f0f0f0'}`}
+					></div>
+				</div>
+			</div>
 
-			<!-- Progress Bar -->
-			<div>{progress}%</div>
-			<div class="progress-bar">
-				<div
-					class="progress-fill"
-					style={`width: ${progress}%; background: ${achievement.unlocked ? '#10B981' : '#8B5CF6'}`}
-				></div>
+			<div class="status-badge">
+				{#if achievement.unlocked}
+					<span class="star">★</span>
+				{/if}
+				{achievement.unlocked ? 'Unlocked' : 'Locked'}
+				{#if achievement.unlocked}
+					<span class="star">★</span>
+				{/if}
 			</div>
 		</div>
+		<div class="banner-tail"></div>
 	</div>
 </div>
 
 <style>
 	.banner-container {
 		position: relative;
-		width: 220px;
+		width: min(280px, 100%);
+		height: 400px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		margin: 0 auto;
+	}
+
+	@media (min-width: 640px) {
+		.banner-container {
+			width: 260px;
+		}
+	}
+
+	.pole {
+		position: absolute;
+		top: 0;
+		width: 8px;
+		height: 100%;
+		z-index: 1;
+	}
+
+	.pole-top {
+		width: 16px;
+		height: 16px;
+		background: #c0c0c0;
+		border-radius: 50%;
+		position: absolute;
+		top: -8px;
+		left: -4px;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+	}
+
+	.pole-body {
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(90deg, #a0a0a0 0%, #d0d0d0 50%, #a0a0a0 100%);
+		box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
 	}
 
 	.banner {
 		position: relative;
-		background: white;
-		border: 2px solid;
-		padding: 1.5rem 1rem;
-		margin: 0 auto;
 		width: 100%;
-		height: 420px;
-		box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+		height: 320px;
+		margin-top: 20px;
+		color: white;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		clip-path: polygon(0 0, 100% 0, 100% 85%, 55% 100%, 50% 95%, 45% 100%, 0 85%);
-		transition:
-			transform 0.2s ease-in-out,
-			box-shadow 0.2s ease-in-out;
-		background: linear-gradient(to bottom, #ffffff, #f3f4f6);
+		padding: 1.5rem;
+		transition: all 0.3s ease;
+		box-shadow:
+			0 4px 6px rgba(0, 0, 0, 0.1),
+			0 1px 3px rgba(0, 0, 0, 0.1);
+		background-image: linear-gradient(
+			45deg,
+			rgba(255, 255, 255, 0.1) 25%,
+			transparent 25%,
+			transparent 50%,
+			rgba(255, 255, 255, 0.1) 50%,
+			rgba(255, 255, 255, 0.1) 75%,
+			transparent 75%,
+			transparent
+		);
+		background-size: 10px 10px;
+		overflow: visible;
+		z-index: 2;
 	}
 
-	/* ✅ Glowing effect restored */
 	.banner.unlocked {
-		box-shadow: 0 0 25px rgba(16, 185, 129, 0.9);
-		animation: glow 1.5s infinite alternate ease-in-out;
-	}
-
-	@keyframes glow {
-		0% {
-			box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
-		}
-		100% {
-			box-shadow: 0 0 25px rgba(16, 185, 129, 0.9);
-		}
-	}
-
-	.banner:hover {
-		transform: scale(1.05);
-		box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+		animation: sway 3s ease-in-out infinite;
+		box-shadow:
+			0 0 30px rgba(16, 185, 129, 0.4),
+			0 0 60px rgba(16, 185, 129, 0.2),
+			0 4px 6px rgba(0, 0, 0, 0.1);
 	}
 
 	.banner-content {
+		width: 100%;
+		height: 100%;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		text-align: center;
-
-		height: 100%;
-		width: 100%;
+		position: relative;
+		z-index: 3;
 	}
 
-	/* ✅ FIXED: Icon is INSIDE + Circle Ring */
-	.icon-container {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		margin-bottom: 10px;
+	.achievement-medal {
+		position: relative;
+		margin-bottom: 1.5rem;
 	}
 
-	.icon-ring {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 60px;
-		height: 60px;
+	.medal-ring {
+		position: absolute;
+		width: 52px;
+		height: 52px;
+		border: 3px solid rgba(255, 255, 255, 0.8);
 		border-radius: 50%;
-		border: 4px solid #8b5cf6;
+		top: -6px;
+		left: -6px;
+		animation: rotate 8s linear infinite;
+	}
+
+	.banner.unlocked .medal-ring {
+		border-color: gold;
+		box-shadow:
+			0 0 15px rgba(255, 215, 0, 0.5),
+			0 0 30px rgba(255, 215, 0, 0.3);
+		animation:
+			rotate 8s linear infinite,
+			glow 1.5s infinite alternate;
+	}
+
+	.icon-container {
+		width: 40px;
+		height: 40px;
 		background: white;
-		box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
-		transition: transform 0.2s ease-in-out;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 2;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 	}
 
-	.banner.unlocked .icon-ring {
-		border-color: #10b981;
-		box-shadow: 0 0 15px rgba(16, 185, 129, 0.7);
-		animation: pulse 1.5s infinite alternate;
+	.icon {
+		color: #333;
+		font-size: 1.5rem;
 	}
 
-	@keyframes pulse {
-		0% {
-			transform: scale(1);
-		}
-		100% {
-			transform: scale(1.1);
-		}
+	.ribbon {
+		position: absolute;
+		top: 60px;
+		width: 24px;
+		height: 40px;
+		background: rgba(255, 255, 255, 0.2);
+		z-index: 1;
+	}
+
+	.ribbon.left {
+		left: 20px;
+		transform: skew(-20deg);
+	}
+
+	.ribbon.right {
+		right: 20px;
+		transform: skew(20deg);
 	}
 
 	.title {
-		margin-top: 10px;
-		font-size: 1.25rem;
+		font-size: 1.2rem;
 		font-weight: bold;
-		color: #333;
+		margin-bottom: 0.5rem;
+		text-align: center;
+		text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+		word-wrap: break-word;
+	}
+
+	.separator {
+		display: flex;
+		align-items: center;
+		width: 100%;
+		margin: 0.75rem 0;
+	}
+
+	.line {
+		flex: 1;
+		height: 1px;
+		background: rgba(255, 255, 255, 0.3);
+	}
+
+	.diamond {
+		width: 8px;
+		height: 8px;
+		background: white;
+		transform: rotate(45deg);
+		margin: 0 8px;
 	}
 
 	.description {
-		margin-bottom: 1rem;
 		font-size: 0.9rem;
-		color: #555;
+		margin-bottom: 1rem;
+		opacity: 0.9;
 		line-height: 1.4;
+		text-align: center;
+		padding: 0 0.5rem;
+		word-wrap: break-word;
+	}
+
+	.progress-section {
+		width: 100%;
+		margin-top: auto;
+		padding: 0 0.5rem;
+	}
+
+	.progress-text {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 0.5rem;
+		margin-bottom: 0.5rem;
+	}
+
+	.progress-value {
+		font-size: 1.2rem;
+		font-weight: bold;
+	}
+
+	.progress-label {
+		font-size: 0.8rem;
+		opacity: 0.9;
 	}
 
 	.progress-bar {
-		width: 90%;
+		width: 100%;
 		height: 6px;
-		background: #e5e7eb;
+		background: rgba(255, 255, 255, 0.2);
 		border-radius: 3px;
 		overflow: hidden;
-		margin-top: 80px;
-		margin-bottom: 1rem;
+		box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
 	}
 
 	.progress-fill {
 		height: 100%;
-		border-radius: 3px;
 		transition: width 0.3s ease;
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 	}
 
-	.status-indicator {
-		position: absolute;
-		top: 0;
-		right: 0;
-		width: 30px;
-		height: 100px;
-		color: white;
-		font-size: 0.75rem;
-		font-weight: bold;
+	.status-badge {
+		margin-top: 1rem;
+		font-size: 0.8rem;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
-		writing-mode: vertical-rl;
-		transform: rotate(180deg);
+		padding: 0.4rem 0.8rem;
+		background: rgba(255, 255, 255, 0.2);
+		border-radius: 12px;
 		display: flex;
 		align-items: center;
-		justify-content: center;
-		border-radius: 0 0 0 4px;
+		gap: 0.3rem;
 	}
 
-	.decorative-line {
-		width: 60%;
-		height: 1px;
-		background: linear-gradient(to right, transparent, #8b5cf6, transparent);
-		margin: 1rem 0;
+	.star {
+		font-size: 0.9rem;
+		color: #ffd700;
+		text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+	}
+
+	.banner-tail {
+		position: absolute;
+		bottom: -20px;
+		width: 100%;
+		height: 40px;
+		background: inherit;
+		clip-path: polygon(0 0, 50% 100%, 100% 0);
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	}
+
+	@keyframes sway {
+		0%,
+		100% {
+			transform: rotate(-1deg);
+		}
+		50% {
+			transform: rotate(1deg);
+		}
+	}
+
+	@keyframes rotate {
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	@keyframes glow {
+		0% {
+			box-shadow:
+				0 0 5px rgba(255, 215, 0, 0.5),
+				0 0 10px rgba(255, 215, 0, 0.3);
+		}
+		100% {
+			box-shadow:
+				0 0 15px rgba(255, 215, 0, 0.7),
+				0 0 30px rgba(255, 215, 0, 0.5);
+		}
+	}
+
+	.banner.unlocked .status-badge {
+		background: rgba(255, 215, 0, 0.3);
+		box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
 	}
 </style>
